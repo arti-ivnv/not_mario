@@ -1,0 +1,6 @@
+BasedOnStyle: Microsoft
+AlignConsecutiveDeclarations: true
+AlignConsecutiveAssignments: true
+AlignTrailingComments: true
+SpaceAfterOperatorKeyword: true
+BreakConstructorInitializers: BeforeComma
