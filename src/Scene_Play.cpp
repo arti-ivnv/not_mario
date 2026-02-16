@@ -151,25 +151,25 @@ void Scene_Play::sCollision()
     // TODO: Don't let the player walk off the left side of the map
 }
 
-void Scene_Play::sDoAction(const Action &action)
-{
-    if (action.type() == "START")
-    {
-        if (action.name() == "TOGGLE_TEXTIRE")
-            m_drawTextures = !m_drawTextures;
-        else if (action.name() == "TOGGLE_COLLISION")
-            m_drawCollision = !m_drawCollision;
-        else if (action.name() == "TOGGLE_GRID")
-            m_drawGrid = !m_drawGrid;
-        // else if (action.name() == "PAUSE")
-        //     setPause(!m_paused);
-        else if (action.name() == "QUIT")
-            onEnd();
-    }
-    else if (action.type() == "END")
-    {
-    }
-}
+// void Scene_Play::sDoAction(const Action &action)
+// {
+//     if (action.type() == "START")
+//     {
+//         if (action.name() == "TOGGLE_TEXTIRE")
+//             m_drawTextures = !m_drawTextures;
+//         else if (action.name() == "TOGGLE_COLLISION")
+//             m_drawCollision = !m_drawCollision;
+//         else if (action.name() == "TOGGLE_GRID")
+//             m_drawGrid = !m_drawGrid;
+//         // else if (action.name() == "PAUSE")
+//         //     setPause(!m_paused);
+//         else if (action.name() == "QUIT")
+//             onEnd();
+//     }
+//     else if (action.type() == "END")
+//     {
+//     }
+// }
 
 void Scene_Play::sAnimation()
 {

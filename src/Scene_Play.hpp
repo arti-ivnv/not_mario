@@ -3,7 +3,7 @@
 #include <map>
 #include <memory>
 
-#include "EntityManager.hpp"
+// #include "EntityManager.hpp"
 #include "Scene.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -41,7 +41,7 @@ class Scene_Play : public Scene
     void sMovement();
     void sLifespan();
     void sCollision();
-    void sDoAction(const Action &action);
+    // void sDoAction(const Action &action);
     void sAnimation();
     void sRender();
 

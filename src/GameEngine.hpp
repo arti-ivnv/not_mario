@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Assets.hpp"
-#include "Scene.hpp"
-
 #include <memory>
 
-#include <SFML/Graphics.hpp>
+#include "Assets.hpp"
+// #include "Scene.hpp"
+
+class Scene;
 
 typedef std::map<std::string, std::shared_ptr<Scene>> SceneMap;
 

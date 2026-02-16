@@ -4,14 +4,14 @@
 #include <map>
 #include <memory>
 
-#include "EntityManager.hpp"
+#include "Action.hpp"
 #include "GameEngine.hpp"
 #include "Scene.hpp"
 
-#include <SFML/Graphics.hpp>
-
 class Scene_Menu : public Scene
 {
+    sf::Font m_font; // temp move to asset class later
+
   protected:
     std::string              m_title;
     std::vector<std::string> m_menuStrings;
@@ -22,7 +22,7 @@ class Scene_Menu : public Scene
     void init();
     void update();
     // void onEnd();
-    // void sDoAction(const Action &action);
+    void sDoAction(const Action &action);
 
   public:
     Scene_Menu(GameEngine *gameEngine = nullptr);

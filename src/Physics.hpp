@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Components.hpp"
 #include "EntityManager.hpp"
 #include "Vec2.hpp"
 #include <memory>

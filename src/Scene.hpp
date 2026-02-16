@@ -2,7 +2,7 @@
 
 #include "Action.hpp"
 #include "EntityManager.hpp"
-#include "Vec2.hpp"
+#include "GameEngine.hpp"
 
 #include <memory>
 
@@ -27,19 +27,19 @@ class Scene
     Scene() = default;
     Scene(GameEngine *gameEngine);
 
-    virtual void update() = 0;
-    // virtual void sDoAction(const Action &action) = 0;
-    virtual void sRender() = 0;
+    virtual void update()                        = 0;
+    virtual void sDoAction(const Action &action) = 0;
+    virtual void sRender()                       = 0;
 
-    // virtual void doAction(const Action &action);
+    virtual void doAction(const Action &action);
     // void         simulate(const size_t frames);
-    // void         registerAction(int inputKey, const std::string &actionName);
+    void registerAction(int inputKey, const std::string &actionName);
 
-    // size_t width() const;
-    // size_t height() const;
-    // size_t currentFrame() const;
+    size_t width() const;
+    size_t height() const;
+    size_t currentFrame() const;
 
-    // bool             hasEnded() const;
-    // const ActionMap &getActionMap() const;
-    // void             drawLine(const Vec2 &p1, const Vec2 &p2);
+    bool             hasEnded() const;
+    const ActionMap &getActionMap() const;
+    void             drawLine(const Vec2 &p1, const Vec2 &p2);
 };

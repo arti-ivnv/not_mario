@@ -1,12 +1,12 @@
 #include "Vec2.hpp"
 
-#include <math.h>
-
 Vec2::Vec2()
 {
 }
 
-Vec2::Vec2(float xin, float yin) : x(xin), y(yin)
+Vec2::Vec2(float xin, float yin)
+    : x(xin)
+    , y(yin)
 {
 }
 
