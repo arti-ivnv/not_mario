@@ -41,6 +41,7 @@ class CLifespan : public Component
     int lifespan     = 0; // amount of lifespan remaining on the entity
     int frameCreated = 0; // the total inital amount of lifespan
 
+    CLifespan() = default;
     CLifespan(int duration, int frame)
         : lifespan(duration)
         , frameCreated(frame)
@@ -59,9 +60,7 @@ class CInput : public Component
     bool canShoot = true;
     bool canJump  = true;
 
-    CInput()
-    {
-    }
+    CInput() = default;
 };
 
 class CBoungingBox : public Component
@@ -105,6 +104,7 @@ class CGravity : public Component
 
 class CState : public Component
 {
+  public:
     std::string state = "jumping";
 
     CState() = default;

@@ -24,11 +24,11 @@ class Entity
     // std::tuple<int, double, char> m_myTuple;
     // std::get<int>(m_myTuple);
 
-    Entity(const size_t &id, const std::string &tag);
+    Entity(const size_t id, const std::string &tag);
 
   public:
     void               destroy();
-    size_t             id() const;
+    const size_t       id() const;
     bool               isActive() const;
     const std::string &tag() const;
 
