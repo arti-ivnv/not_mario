@@ -6,6 +6,7 @@
 #include "Physics.hpp"
 
 #include "Scene_Menu.hpp"
+#include <fstream>
 #include <iostream>
 
 void Scene_Play::init(const std::string &levelPath)
@@ -17,10 +18,10 @@ void Scene_Play::init(const std::string &levelPath)
     registerAction(sf::Keyboard::G, "TOGGLE_GRID");      // Toggle drawing (G)rid
 
     // TODO: Register all other gameplay Actions
-    m_gridText.setCharacterSize(12);
-    // m_gridText.setFont(m_game->assets().getFont("Tech"));
+    m_gridText.setCharacterSize(14);
+    m_gridText.setFont(m_game->assets().getFont("cardot"));
 
-    // loadLevel(levelPath);
+    loadLevel(levelPath);
 }
 
 Scene_Play::Scene_Play(GameEngine *gameEngine, const std::string &levelPath)
@@ -30,76 +31,125 @@ Scene_Play::Scene_Play(GameEngine *gameEngine, const std::string &levelPath)
     init(m_levelPath);
 }
 
-// Vec2 Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
-// {
-//     // TODO: This funation takes in a grid (x, y) position and an Entity
-//     //       Return a Vec2 indicationg where the CENTER position of the Entity should be
-//     //       You must use the Enntity's Animation size to position it correctly
-//     //       The size of the grid width and height is stored in m_gridSize.x and m_gridSize.y
-//     //       The bottom-left corner of the Animation should align with the bottom left of the grid cell
+Vec2 Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
+{
+    // TODO: This funation takes in a grid (x, y) position and an Entity
+    //       Return a Vec2 indicating where the CENTER position of the Entity should be
+    //       You must use the Entity's Animation size to position it correctly
+    //       The size of the grid width and height is stored in m_gridSize.x and m_gridSize.y
+    //       The bottom-left corner of the Animation should align with the bottom left of the grid cell
 
-//     return Vec2(0, 0);
-// }
+    // (0, 0) => (32 * 0, height - 64 * 0) =
+    // (0, 1) = (0, height - 64 * 1)
+    // (0, 2) = (0, height - 64 * 2)
+    // ...
+    // (n, n) = (64 * n, heigth - 64 * n)
+    auto cAnimation = entity->getComponent<CAnimation>();
+    Vec2 bottomLeftCell(gridX * 64 + (cAnimation.animation.getSize().x / 2) * 4,
+                        m_game->window().getSize().y - (64 * gridY) - (cAnimation.animation.getSize().y / 2) * 4);
+    return bottomLeftCell;
+}
 
-// void Scene_Play::loadLevel(const std::string &filename)
-// {
-//     // reset the entity manager every time we load a level
-//     m_entityManager = EntityManager();
+void Scene_Play::loadLevel(const std::string &filename)
+{
+    // reset the entity manager every time we load a level
+    m_entityManager = EntityManager();
 
-//     // TODO: read in the level file and add the appropriate entities
-//     //       use the PlayerConfig struct m_playerConfig to store player properties
-//     //       this struct is defined at the top of Scene_Play.h
+    // TODO: read in the level file and add the appropriate entities
+    //       use the PlayerConfig struct m_playerConfig to store player properties
+    //       this struct is defined at the top of Scene_Play.h
 
-//     // NOTE: all of the code below is sample code which shows you how to
-//     //       set up and use entities with the new syntax, it should be removed
+    // NOTE: all of the code below is sample code which shows you how to
+    //       set up and use entities with the new syntax, it should be removed
 
-//     // spawnPlayer();
+    std::fstream fin(filename);
+    std::string  fpoint;
 
-//     // some sample entities
-//     auto brick = m_entityManager.addEntity("tile");
-//     // IMPORTANT: always add the CAnimation component first so that gridToMidPixel can compute correctly
-//     // brick->addComponent<CAnimation>(m_game->assets().getAnimation("Brick"), true);
-//     brick->addComponent<CTransform>(Vec2(96, 480));
-//     // NOTE: You final code should postion the entity with the grid x, y, postion read from the file:
-//     // brick->addComponent<CTransform>(gridToMidPixel(gridX, gridY, brick));
+    while (fin >> fpoint)
+    {
+        if (fpoint == "Tile")
+        {
+            std::string name;
+            float       gX;
+            float       gY;
 
-//     if (brick->getComponent<CAnimation>().animation.getName() == "Brick")
-//     {
-//         std::cout << "This could be a good way of identifying if a tile is a brick!\n";
-//     }
+            fin >> name >> gX >> gY;
 
-//     auto block = m_entityManager.addEntity("tile");
-//     // brick->addComponent<CAnimation>(m_game->assets().getAnimation("Block"), true);
-//     brick->addComponent<CTransform>(Vec2(224, 480));
-//     // add a bounding box, this will now show up if we press the 'C' key
-//     // block->addComponent<CBoungingBox>(m_game->assets().getAnimation("Block").getSize());
+            auto entiy = m_entityManager.addEntity(name);
+            entiy->addComponent<CAnimation>(m_game->assets().getAnimation(name), true);
+            entiy->addComponent<CTransform>(gridToMidPixel(gX, gY, entiy));
+            auto &cTransform = entiy->getComponent<CTransform>();
+            cTransform.scale = Vec2(4.f, 4.f);
+        }
+        else if (fpoint == "Dec")
+        {
+            std::string name;
+            float       gX;
+            float       gY;
 
-//     auto question = m_entityManager.addEntity("tile");
-//     // brick->addComponent<CAnimation>(m_game->assets().getAnimation("Question"), true);
-//     brick->addComponent<CTransform>(Vec2(224, 480));
+            fin >> name >> gX >> gY;
 
-//     // NOTE: THIS IS INCREADIBLY IMPORTANT
-//     //       Components are now returned as references rather than pointers
-//     //       If you do not specify a reference variable type, it will COPY the component
-//     //       Here is an example:
-//     //
-//     //       This will COPY the transform into the variable 'transform1' - it is INCORRECT
-//     //       Any changes you make to transform1 will not be changed inside the entity
-//     //       auto transform1 = entity->get<CTransform>()
-//     //
-//     //       This will REFERENCE the transform with the variable 'transform2' - it is CORRECT
-//     //       Now any changes you make to transform2 will be changed inside the entity
-//     //       auto& transform2 = entity->get<CTransform>()
-// }
+            auto entiy = m_entityManager.addEntity(name);
+            entiy->addComponent<CAnimation>(m_game->assets().getAnimation(name), true);
+            entiy->addComponent<CTransform>(gridToMidPixel(gX, gY, entiy));
+            auto &cTransform = entiy->getComponent<CTransform>();
+            cTransform.scale = Vec2(4.f, 4.f);
+        }
+    }
 
-// void Scene_Play::spawnPlayer()
-// {
-//     // here is a sample player entity which you can use to construct entities
-//     m_player = m_entityManager.addEntity("player");
-//     // m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Stand"), true);
-//     m_player->addComponent<CTransform>(Vec2(224, 480));
-//     m_player->addComponent<CBoungingBox>(Vec2(48, 48));
-// }
+    spawnPlayer();
+
+    // some sample entities
+    // auto brick = m_entityManager.addEntity("ground");
+
+    // !IMPORTANT: always add the CAnimation component first so that gridToMidPixel can compute correctly
+    // brick->addComponent<CAnimation>(m_game->assets().getAnimation("Ground"), true);
+    // brick->addComponent<CTransform>(Vec2(96, 480));
+    // auto &transform = brick->getComponent<CTransform>();
+    // transform.scale = Vec2(4.f, 4.f);
+    // brick->getComponent<CTransform>().scale(Vec2(4.0, 4.0));
+    // NOTE: You final code should postion the entity with the grid x, y, postion read from the file:
+    // brick->addComponent<CTransform>(gridToMidPixel(gridX, gridY, brick));
+
+    // if (brick->getComponent<CAnimation>().animation.getName() == "Ground")
+    // {
+    //     std::cout << "This could be a good way of identifying if a tile is a brick!\n";
+    // }
+
+    // auto block = m_entityManager.addEntity("tile");
+    // brick->addComponent<CAnimation>(m_game->assets().getAnimation("Block"), true);
+    // brick->addComponent<CTransform>(Vec2(224, 480));
+    // add a bounding box, this will now show up if we press the 'C' key
+    // block->addComponent<CBoungingBox>(m_game->assets().getAnimation("Block").getSize());
+
+    // auto question = m_entityManager.addEntity("tile");
+    // brick->addComponent<CAnimation>(m_game->assets().getAnimation("Question"), true);
+    // brick->addComponent<CTransform>(Vec2(224, 480));
+
+    // NOTE: THIS IS INCREADIBLY IMPORTANT
+    //       Components are now returned as references rather than pointers
+    //       If you do not specify a reference variable type, it will COPY the component
+    //       Here is an example:
+    //
+    //       This will COPY the transform into the variable 'transform1' - it is INCORRECT
+    //       Any changes you make to transform1 will not be changed inside the entity
+    //       auto transform1 = entity->get<CTransform>()
+    //
+    //       This will REFERENCE the transform with the variable 'transform2' - it is CORRECT
+    //       Now any changes you make to transform2 will be changed inside the entity
+    //       auto& transform2 = entity->get<CTransform>()
+}
+
+void Scene_Play::spawnPlayer()
+{
+    // here is a sample player entity which you can use to construct entities
+    m_player = m_entityManager.addEntity("player");
+    m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Idle"), true);
+    m_player->addComponent<CTransform>(Vec2(224, 480));
+    auto &transform = m_player->getComponent<CTransform>();
+    transform.scale = Vec2(4.f, 4.f);
+    m_player->addComponent<CBoungingBox>(Vec2(48, 48));
+}
 
 void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
 {
@@ -108,7 +158,7 @@ void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
 
 void Scene_Play::update()
 {
-    // m_entityManager.update();
+    m_entityManager.update();
 
     // TODO: implement pause functionality
 
@@ -205,23 +255,22 @@ void Scene_Play::sRender()
     // view.setCenter(windowCenterX, m_game->window().getSize().y - view.getCenter().y);
     // m_game->window().setView(view);
 
-    // // draw all Entity textures / animations
-    // if (m_drawTextures)
-    // {
-    //     for (auto e : m_entityManager.getEntities())
-    //     {
-    //         auto &transform = e->getComponent<CTransform>();
-
-    //         if (e->hasComponent<CAnimation>())
-    //         {
-    //             auto &animation = e->getComponent<CAnimation>().animation;
-    //             animation.getSprite().setRotation(transform.angle);
-    //             animation.getSprite().setPosition(transform.pos.x, transform.pos.y);
-    //             animation.getSprite().setScale(transform.scale.x, transform.scale.y);
-    //             m_game->window().draw(animation.getSprite());
-    //         }
-    //     }
-    // }
+    // draw all Entity textures / animations
+    if (m_drawTextures)
+    {
+        for (auto e : m_entityManager.getEntities())
+        {
+            auto &transform = e->getComponent<CTransform>();
+            if (e->hasComponent<CAnimation>())
+            {
+                auto &animation = e->getComponent<CAnimation>().animation;
+                animation.getSprite().setRotation(transform.angle);
+                animation.getSprite().setPosition(transform.pos.x, transform.pos.y);
+                animation.getSprite().setScale(transform.scale.x, transform.scale.y);
+                m_game->window().draw(animation.getSprite());
+            }
+        }
+    }
 
     // // draw all Entity collision bounding boxes with a rectangleshape
     // if (m_drawCollision)
@@ -274,6 +323,7 @@ void Scene_Play::sRender()
                 std::string xCell = std::to_string((int)x / (int)m_gridSize.x);
                 std::string yCell = std::to_string((int)y / (int)m_gridSize.y);
                 m_gridText.setString("(" + xCell + "," + yCell + ")");
+                m_gridText.setColor(sf::Color::White);
                 m_gridText.setPosition(x + 3, height() - y - m_gridSize.y + 2);
                 m_game->window().draw(m_gridText);
             }

@@ -16,9 +16,7 @@ class Animation
 
   public:
     Animation() = default;
-    // m_sprite.setOrigin()
     Animation(const std::string &name, const sf::Texture &t, size_t frameCount, size_t speed);
-    // m_sprite.setOrigin()
     Animation(const std::string &name, const sf::Texture &t);
 
     void               update();

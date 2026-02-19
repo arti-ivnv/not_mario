@@ -17,9 +17,9 @@ void Scene_Menu::init()
     m_menuStrings.push_back("LEVEL 2");
     m_menuStrings.push_back("LEVEL 3");
 
-    m_levelPaths.push_back("assets/data/level1.txt");
-    m_levelPaths.push_back("assets/data/level2.txt");
-    m_levelPaths.push_back("assets/data/level3.txt");
+    m_levelPaths.push_back("data/level1.txt");
+    m_levelPaths.push_back("data/level2.txt");
+    m_levelPaths.push_back("data/level3.txt");
 
     m_menuStrings.push_back("UP : W");
     m_menuStrings.push_back("DOWN : S");

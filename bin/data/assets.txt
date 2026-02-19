@@ -1,3 +1,10 @@
-Font byteBounce assets/fonts/ByteBounce.ttf
-Texture TexIdle assets/animations/Mario_Small_Idle.png
-Animation Idle TexIdle 1 0
+Font byteBounce      assets/fonts/ByteBounce.ttf
+Font cardot          assets/fonts/Cardot.ttf
+
+Texture TexIdle      assets/animations/Mario_Small_Idle.png
+Texture TexGround    assets/textures/GroundBlock.png
+Texture TexSmallHill assets/textures/Hill1.png
+
+Animation Idle      TexIdle      1 0
+Animation Ground    TexGround    1 0
+Animation SmallHill TexSmallHill 1 0
