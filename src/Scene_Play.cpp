@@ -5,15 +5,16 @@
 #include "GameEngine.hpp"
 #include "Physics.hpp"
 
+#include "Scene_Menu.hpp"
 #include <iostream>
 
 void Scene_Play::init(const std::string &levelPath)
 {
-    // registerAction(sf::Keyboard::P, "PAUSE");
-    // registerAction(sf::Keyboard::Escape, "QUIT");
-    // registerAction(sf::Keyboard::T, "TOGGLE_TEXTURE");   // Toggle drawing (T)extures
-    // registerAction(sf::Keyboard::C, "TOGGLE_COLLISION"); // Toggle drawing (C)ollision Boxes
-    // registerAction(sf::Keyboard::G, "TOGGLE_GRID");      // Toggle drawing (G)rid
+    registerAction(sf::Keyboard::P, "PAUSE");
+    registerAction(sf::Keyboard::Escape, "QUIT");
+    registerAction(sf::Keyboard::T, "TOGGLE_TEXTURE");   // Toggle drawing (T)extures
+    registerAction(sf::Keyboard::C, "TOGGLE_COLLISION"); // Toggle drawing (C)ollision Boxes
+    registerAction(sf::Keyboard::G, "TOGGLE_GRID");      // Toggle drawing (G)rid
 
     // TODO: Register all other gameplay Actions
     m_gridText.setCharacterSize(12);
@@ -29,16 +30,16 @@ Scene_Play::Scene_Play(GameEngine *gameEngine, const std::string &levelPath)
     init(m_levelPath);
 }
 
-Vec2 Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
-{
-    // TODO: This funation takes in a grid (x, y) position and an Entity
-    //       Return a Vec2 indicationg where the CENTER position of the Entity should be
-    //       You must use the Enntity's Animation size to position it correctly
-    //       The size of the grid width and height is stored in m_gridSize.x and m_gridSize.y
-    //       The bottom-left corner of the Animation should align with the bottom left of the grid cell
+// Vec2 Scene_Play::gridToMidPixel(float gridX, float gridY, std::shared_ptr<Entity> entity)
+// {
+//     // TODO: This funation takes in a grid (x, y) position and an Entity
+//     //       Return a Vec2 indicationg where the CENTER position of the Entity should be
+//     //       You must use the Enntity's Animation size to position it correctly
+//     //       The size of the grid width and height is stored in m_gridSize.x and m_gridSize.y
+//     //       The bottom-left corner of the Animation should align with the bottom left of the grid cell
 
-    return Vec2(0, 0);
-}
+//     return Vec2(0, 0);
+// }
 
 // void Scene_Play::loadLevel(const std::string &filename)
 // {
@@ -109,13 +110,18 @@ void Scene_Play::update()
 {
     // m_entityManager.update();
 
-    // // TODO: implement pause functionality
+    // TODO: implement pause functionality
 
     // sMovement();
     // sLifespan();
     // sCollision();
     // sAnimation();
-    // sRender();
+    sRender();
+}
+
+void Scene_Play::setPause(bool isPaused)
+{
+    m_paused = isPaused;
 }
 
 void Scene_Play::sMovement()
@@ -151,25 +157,25 @@ void Scene_Play::sCollision()
     // TODO: Don't let the player walk off the left side of the map
 }
 
-// void Scene_Play::sDoAction(const Action &action)
-// {
-//     if (action.type() == "START")
-//     {
-//         if (action.name() == "TOGGLE_TEXTIRE")
-//             m_drawTextures = !m_drawTextures;
-//         else if (action.name() == "TOGGLE_COLLISION")
-//             m_drawCollision = !m_drawCollision;
-//         else if (action.name() == "TOGGLE_GRID")
-//             m_drawGrid = !m_drawGrid;
-//         // else if (action.name() == "PAUSE")
-//         //     setPause(!m_paused);
-//         else if (action.name() == "QUIT")
-//             onEnd();
-//     }
-//     else if (action.type() == "END")
-//     {
-//     }
-// }
+void Scene_Play::sDoAction(const Action &action)
+{
+    if (action.type() == "START")
+    {
+        if (action.name() == "TOGGLE_TEXTIRE")
+            m_drawTextures = !m_drawTextures;
+        else if (action.name() == "TOGGLE_COLLISION")
+            m_drawCollision = !m_drawCollision;
+        else if (action.name() == "TOGGLE_GRID")
+            m_drawGrid = !m_drawGrid;
+        else if (action.name() == "PAUSE")
+            setPause(!m_paused);
+        else if (action.name() == "QUIT")
+            onEnd();
+    }
+    else if (action.type() == "END")
+    {
+    }
+}
 
 void Scene_Play::sAnimation()
 {
@@ -183,16 +189,16 @@ void Scene_Play::sAnimation()
 void Scene_Play::sRender()
 {
     // // color the backgound darker so you know that the game is paused
-    // if (!m_paused)
-    // {
-    //     m_game->window().clear(sf::Color(100, 100, 255));
-    // }
-    // else
-    // {
-    //     m_game->window().clear(sf::Color(50, 50, 150));
-    // }
+    if (!m_paused)
+    {
+        m_game->window().clear(sf::Color(100, 100, 255));
+    }
+    else
+    {
+        m_game->window().clear(sf::Color(50, 50, 150));
+    }
 
-    // // set the viewport of the window to be centered on the player if it's far enough right
+    // set the viewport of the window to be centered on the player if it's far enough right
     // auto    &pPos          = m_player->getComponent<CTransform>().pos;
     // float    windowCenterX = std::max(m_game->window().getSize().x / 2.0f, pPos.x);
     // sf::View view          = m_game->window().getView();
@@ -239,35 +245,47 @@ void Scene_Play::sRender()
     //     }
     // }
 
-    // if (m_drawGrid)
-    // {
-    //     float leftX     = m_game->window().getView().getCenter().x - width() / 2;
-    //     float rightX    = leftX + width() + m_gridSize.x;
-    //     float nextGridX = leftX - ((int)leftX % (int)m_gridSize.x);
+    if (m_drawGrid)
+    {
+        // std::cout << m_game->window().getView().getCenter().x << '\n';
+        // std::cout << width() / 2 << '\n';
+        float leftX = m_game->window().getView().getCenter().x - width() / 2;
+        // std::cout << "leftX: " << leftX << '\n';
+        float rightX = leftX + width() + m_gridSize.x;
+        // std::cout << "rightX: " << rightX << '\n';
+        float nextGridX = leftX - ((int)leftX % (int)m_gridSize.x);
+        // std::cout << "nextGridX: " << nextGridX << '\n';
 
-    //     for (float x = nextGridX; x < rightX; x += m_gridSize.x)
-    //     {
-    //         drawLine(Vec2(x, 0), Vec2(x, height());
-    //     }
+        // float leftX     = 0;
+        // float rightX    = width();
+        // float nextGridX = 0;
 
-    //     for (float y = 0; y < height(); y += m_gridSize.y)
-    //     {
-    //         drawLine(Vec2(leftX, height() - y), Vec2(rightX, height() - y));
+        for (float x = nextGridX; x < rightX; x += m_gridSize.x)
+        {
+            drawLine(Vec2(x, 0), Vec2(x, height()));
+        }
 
-    //         for (float x = nextGridX; x < rightX; x += m_gridSize.x)
-    //         {
-    //             std::string xCell = std::to_string((int)x / (int)m_gridSize.x);
-    //             std::string yCell = std::to_string((int)y / (int)m_gridSize.y);
-    //             m_gridText.setString("(" + xCell + "," + yCell + ")");
-    //             m_gridText.setPosition(x + 3, height() - y - m_gridSize.y + 2);
-    //             m_game->window().draw(m_gridText);
-    //         }
-    //     }
-    // }
+        for (float y = 0; y < height(); y += m_gridSize.y)
+        {
+            drawLine(Vec2(leftX, height() - y), Vec2(rightX, height() - y));
+
+            for (float x = nextGridX; x < rightX; x += m_gridSize.x)
+            {
+                std::string xCell = std::to_string((int)x / (int)m_gridSize.x);
+                std::string yCell = std::to_string((int)y / (int)m_gridSize.y);
+                m_gridText.setString("(" + xCell + "," + yCell + ")");
+                m_gridText.setPosition(x + 3, height() - y - m_gridSize.y + 2);
+                m_game->window().draw(m_gridText);
+            }
+        }
+    }
+
+    m_game->window().display();
 }
 
 void Scene_Play::onEnd()
 {
     // TODO: When the scene ends, change back to the MENU scene
     //       use m_game->changeScene(correct params);
+    m_game->changeScene("MENU", std::make_shared<Scene_Menu>(m_game), true);
 }

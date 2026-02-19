@@ -37,11 +37,12 @@ class Scene_Play : public Scene
     void spawnPlayer();
     void spawnBullet(std::shared_ptr<Entity> entity);
     void update();
+    void setPause(bool isPaused);
 
     void sMovement();
     void sLifespan();
     void sCollision();
-    // void sDoAction(const Action &action);
+    void sDoAction(const Action &action);
     void sAnimation();
     void sRender();
 

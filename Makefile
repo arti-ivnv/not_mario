@@ -21,7 +21,7 @@ INC_DIR := ./include
 
 BIN_DIR := ./bin
 
-CONFIG_FILES := .bin/data/config.txt
+CONFIG_FILES := .bin/data/assets.txt
 
 # Mac comiler / linker flags
 ifeq ($(OS), Darwin)

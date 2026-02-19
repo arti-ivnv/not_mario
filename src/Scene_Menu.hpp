@@ -10,7 +10,8 @@
 
 class Scene_Menu : public Scene
 {
-    sf::Font m_font; // temp move to asset class later
+
+    sf::Font m_font;
 
   protected:
     std::string              m_title;
@@ -21,7 +22,7 @@ class Scene_Menu : public Scene
 
     void init();
     void update();
-    // void onEnd();
+    void onEnd();
     void sDoAction(const Action &action);
 
   public:

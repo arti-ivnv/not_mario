@@ -1,0 +1,3 @@
+Font byteBounce assets/fonts/ByteBounce.ttf
+Texture TexIdle assets/animations/Mario_Small_Idle.png
+Animation Idle TexIdle 1 0

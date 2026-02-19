@@ -4,3 +4,5 @@ AlignConsecutiveAssignments: true
 AlignTrailingComments: true
 SpaceAfterOperatorKeyword: true
 BreakConstructorInitializers: BeforeComma
+# ReferenceAlignment: Left
+# PointerAlignment: Left

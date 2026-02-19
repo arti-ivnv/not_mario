@@ -5,7 +5,7 @@
 
 int main(void)
 {
-    GameEngine g("config.txt");
+    GameEngine g("data/assets.txt");
     g.run();
     return 0;
 }
