@@ -17,6 +17,9 @@ void Scene_Play::init(const std::string &levelPath)
     registerAction(sf::Keyboard::C, "TOGGLE_COLLISION"); // Toggle drawing (C)ollision Boxes
     registerAction(sf::Keyboard::G, "TOGGLE_GRID");      // Toggle drawing (G)rid
 
+    registerAction(sf::Keyboard::D, "MOVE_FORWARD");
+    registerAction(sf::Keyboard::A, "MOVE_BACKWARD");
+
     // TODO: Register all other gameplay Actions
     m_gridText.setCharacterSize(14);
     m_gridText.setFont(m_game->assets().getFont("cardot"));
@@ -75,10 +78,10 @@ void Scene_Play::loadLevel(const std::string &filename)
 
             fin >> name >> gX >> gY;
 
-            auto entity = m_entityManager.addEntity(name);
+            auto entity = m_entityManager.addEntity("tile");
             entity->addComponent<CAnimation>(m_game->assets().getAnimation(name), true);
             entity->addComponent<CTransform>(gridToMidPixel(gX, gY, entity));
-            entity->addComponent<CBoungingBox>(Vec2(64, 64));
+            entity->addComponent<CBoungingBox>(m_game->assets().getAnimation(name).getSize() * 4);
 
             auto &cTransform = entity->getComponent<CTransform>();
             cTransform.scale = Vec2(4.f, 4.f);
@@ -91,18 +94,16 @@ void Scene_Play::loadLevel(const std::string &filename)
 
             fin >> name >> gX >> gY;
 
-            auto entiy = m_entityManager.addEntity(name);
+            auto entiy = m_entityManager.addEntity("decoration");
             entiy->addComponent<CAnimation>(m_game->assets().getAnimation(name), true);
             entiy->addComponent<CTransform>(gridToMidPixel(gX, gY, entiy));
+
             auto &cTransform = entiy->getComponent<CTransform>();
             cTransform.scale = Vec2(4.f, 4.f);
         }
     }
 
     spawnPlayer();
-
-    // some sample entities
-    // auto brick = m_entityManager.addEntity("ground");
 
     // !IMPORTANT: always add the CAnimation component first so that gridToMidPixel can compute correctly
     // brick->addComponent<CAnimation>(m_game->assets().getAnimation("Ground"), true);
@@ -147,10 +148,12 @@ void Scene_Play::spawnPlayer()
     // here is a sample player entity which you can use to construct entities
     m_player = m_entityManager.addEntity("player");
     m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Idle"), true);
-    m_player->addComponent<CTransform>(Vec2(224, 480));
-    auto &transform = m_player->getComponent<CTransform>();
-    transform.scale = Vec2(4.f, 4.f);
-    m_player->addComponent<CBoungingBox>(Vec2(64, 64));
+    m_player->addComponent<CTransform>(gridToMidPixel(1, 1, m_player));
+    m_player->addComponent<CInput>();
+    m_player->addComponent<CBoungingBox>(m_game->assets().getAnimation("Idle").getSize() * 4);
+    auto &transform    = m_player->getComponent<CTransform>();
+    transform.velocity = Vec2(10, 0);
+    transform.scale    = Vec2(4.f, 4.f);
 }
 
 void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
@@ -164,7 +167,7 @@ void Scene_Play::update()
 
     // TODO: implement pause functionality
 
-    // sMovement();
+    sMovement();
     // sLifespan();
     // sCollision();
     // sAnimation();
@@ -182,6 +185,23 @@ void Scene_Play::sMovement()
     // TODO: Implement gravity's effect on the player
     // TODO: Implement the maximum player speed in both X and Y directions
     // TODO: Setting an entity's scale.x to -1/1 will make it face to the left/right
+    auto &p_Input     = m_player->getComponent<CInput>();
+    auto &p_Transform = m_player->getComponent<CTransform>();
+    auto &p_Animation = m_player->getComponent<CAnimation>();
+
+    if (p_Input.right)
+    {
+        p_Transform.prevPos = p_Transform.pos;
+        p_Transform.pos += p_Transform.velocity;
+        p_Transform.scale.x = 4;
+    }
+
+    if (p_Input.left)
+    {
+        p_Transform.prevPos = p_Transform.pos;
+        p_Transform.pos -= p_Transform.velocity;
+        p_Transform.scale.x = -4;
+    }
 }
 
 void Scene_Play::sLifespan()
@@ -223,9 +243,17 @@ void Scene_Play::sDoAction(const Action &action)
             setPause(!m_paused);
         else if (action.name() == "QUIT")
             onEnd();
+        else if (action.name() == "MOVE_FORWARD")
+            m_player->getComponent<CInput>().right = true;
+        else if (action.name() == "MOVE_BACKWARD")
+            m_player->getComponent<CInput>().left = true;
     }
     else if (action.type() == "END")
     {
+        if (action.name() == "MOVE_FORWARD")
+            m_player->getComponent<CInput>().right = false;
+        else if (action.name() == "MOVE_BACKWARD")
+            m_player->getComponent<CInput>().left = false;
     }
 }
 
@@ -240,7 +268,7 @@ void Scene_Play::sAnimation()
 
 void Scene_Play::sRender()
 {
-    // // color the backgound darker so you know that the game is paused
+    // color the backgound darker so you know that the game is paused
     if (!m_paused)
     {
         m_game->window().clear(sf::Color(100, 100, 255));
