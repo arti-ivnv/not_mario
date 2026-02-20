@@ -75,10 +75,12 @@ void Scene_Play::loadLevel(const std::string &filename)
 
             fin >> name >> gX >> gY;
 
-            auto entiy = m_entityManager.addEntity(name);
-            entiy->addComponent<CAnimation>(m_game->assets().getAnimation(name), true);
-            entiy->addComponent<CTransform>(gridToMidPixel(gX, gY, entiy));
-            auto &cTransform = entiy->getComponent<CTransform>();
+            auto entity = m_entityManager.addEntity(name);
+            entity->addComponent<CAnimation>(m_game->assets().getAnimation(name), true);
+            entity->addComponent<CTransform>(gridToMidPixel(gX, gY, entity));
+            entity->addComponent<CBoungingBox>(Vec2(64, 64));
+
+            auto &cTransform = entity->getComponent<CTransform>();
             cTransform.scale = Vec2(4.f, 4.f);
         }
         else if (fpoint == "Dec")
@@ -148,7 +150,7 @@ void Scene_Play::spawnPlayer()
     m_player->addComponent<CTransform>(Vec2(224, 480));
     auto &transform = m_player->getComponent<CTransform>();
     transform.scale = Vec2(4.f, 4.f);
-    m_player->addComponent<CBoungingBox>(Vec2(48, 48));
+    m_player->addComponent<CBoungingBox>(Vec2(64, 64));
 }
 
 void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
@@ -249,11 +251,11 @@ void Scene_Play::sRender()
     }
 
     // set the viewport of the window to be centered on the player if it's far enough right
-    // auto    &pPos          = m_player->getComponent<CTransform>().pos;
-    // float    windowCenterX = std::max(m_game->window().getSize().x / 2.0f, pPos.x);
-    // sf::View view          = m_game->window().getView();
-    // view.setCenter(windowCenterX, m_game->window().getSize().y - view.getCenter().y);
-    // m_game->window().setView(view);
+    auto    &pPos          = m_player->getComponent<CTransform>().pos;
+    float    windowCenterX = std::max(m_game->window().getSize().x / 2.0f, pPos.x);
+    sf::View view          = m_game->window().getView();
+    view.setCenter(windowCenterX, m_game->window().getSize().y - view.getCenter().y);
+    m_game->window().setView(view);
 
     // draw all Entity textures / animations
     if (m_drawTextures)
@@ -272,27 +274,27 @@ void Scene_Play::sRender()
         }
     }
 
-    // // draw all Entity collision bounding boxes with a rectangleshape
-    // if (m_drawCollision)
-    // {
-    //     for (auto e : m_entityManager.getEntities())
-    //     {
-    //         if (e->hasComponent<CBoungingBox>())
-    //         {
-    //             auto              &box       = e->getComponent<CBoungingBox>();
-    //             auto              &transform = e->getComponent<CTransform>();
-    //             sf::RectangleShape rect;
+    // draw all Entity collision bounding boxes with a rectangleshape
+    if (m_drawCollision)
+    {
+        for (auto e : m_entityManager.getEntities())
+        {
+            if (e->hasComponent<CBoungingBox>())
+            {
+                auto              &box       = e->getComponent<CBoungingBox>();
+                auto              &transform = e->getComponent<CTransform>();
+                sf::RectangleShape rect;
 
-    //             rect.setSize(sf::Vector2f(box.size.x - 1, box.size.y - 1));
-    //             rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
-    //             rect.setPosition(transform.pos.x, transform.pos.y);
-    //             rect.setFillColor(sf::Color(0, 0, 0, 0));
-    //             rect.setOutlineColor(sf::Color(255, 255, 255, 255));
-    //             rect.setOutlineThickness(1);
-    //             m_game->window().draw(rect);
-    //         }
-    //     }
-    // }
+                rect.setSize(sf::Vector2f(box.size.x - 1, box.size.y - 1));
+                rect.setOrigin(sf::Vector2f(box.halfSize.x, box.halfSize.y));
+                rect.setPosition(transform.pos.x, transform.pos.y);
+                rect.setFillColor(sf::Color(0, 0, 0, 0));
+                rect.setOutlineColor(sf::Color(255, 255, 255, 255));
+                rect.setOutlineThickness(1);
+                m_game->window().draw(rect);
+            }
+        }
+    }
 
     if (m_drawGrid)
     {
