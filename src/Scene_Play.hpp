@@ -3,7 +3,7 @@
 #include <map>
 #include <memory>
 
-// #include "EntityManager.hpp"
+#include "Physics.hpp"
 #include "Scene.hpp"
 
 #include <SFML/Graphics.hpp>
@@ -12,7 +12,7 @@ class Scene_Play : public Scene
 {
     struct PlayerConfig
     {
-        float       X, Y, CX, CY, SPEED, MAXSPEED, JUMP, GRAVITY;
+        float       GX, GY, BBW, BBH, SPEED, JUMPSPEED, MAXSPEED, GRAVITY;
         std::string WEAPON;
     };
 

@@ -19,6 +19,9 @@ void Scene_Play::init(const std::string &levelPath)
 
     registerAction(sf::Keyboard::D, "MOVE_FORWARD");
     registerAction(sf::Keyboard::A, "MOVE_BACKWARD");
+    registerAction(sf::Keyboard::S, "MOVE_DOWN");
+    registerAction(sf::Keyboard::W, "MOVE_UP");
+    registerAction(sf::Keyboard::Space, "JUMP");
 
     // TODO: Register all other gameplay Actions
     m_gridText.setCharacterSize(14);
@@ -101,9 +104,15 @@ void Scene_Play::loadLevel(const std::string &filename)
             auto &cTransform = entiy->getComponent<CTransform>();
             cTransform.scale = Vec2(4.f, 4.f);
         }
-    }
+        else if (fpoint == "Player")
+        {
+            fin >> m_playerConfig.GX >> m_playerConfig.GY >> m_playerConfig.BBW >> m_playerConfig.BBH >>
+                m_playerConfig.SPEED >> m_playerConfig.JUMPSPEED >> m_playerConfig.MAXSPEED >> m_playerConfig.GRAVITY >>
+                m_playerConfig.WEAPON;
 
-    spawnPlayer();
+            spawnPlayer();
+        }
+    }
 
     // !IMPORTANT: always add the CAnimation component first so that gridToMidPixel can compute correctly
     // brick->addComponent<CAnimation>(m_game->assets().getAnimation("Ground"), true);
@@ -129,7 +138,7 @@ void Scene_Play::loadLevel(const std::string &filename)
     // brick->addComponent<CAnimation>(m_game->assets().getAnimation("Question"), true);
     // brick->addComponent<CTransform>(Vec2(224, 480));
 
-    // NOTE: THIS IS INCREADIBLY IMPORTANT
+    // !NOTE: THIS IS INCREADIBLY IMPORTANT
     //       Components are now returned as references rather than pointers
     //       If you do not specify a reference variable type, it will COPY the component
     //       Here is an example:
@@ -148,11 +157,13 @@ void Scene_Play::spawnPlayer()
     // here is a sample player entity which you can use to construct entities
     m_player = m_entityManager.addEntity("player");
     m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Idle"), true);
-    m_player->addComponent<CTransform>(gridToMidPixel(1, 1, m_player));
+    m_player->addComponent<CTransform>(gridToMidPixel(m_playerConfig.GX, m_playerConfig.GY, m_player));
     m_player->addComponent<CInput>();
-    m_player->addComponent<CBoungingBox>(m_game->assets().getAnimation("Idle").getSize() * 4);
+    m_player->addComponent<CState>();
+    m_player->addComponent<CGravity>(m_playerConfig.GRAVITY);
+    m_player->addComponent<CBoungingBox>(Vec2(m_playerConfig.BBH, m_playerConfig.BBW));
     auto &transform    = m_player->getComponent<CTransform>();
-    transform.velocity = Vec2(10, 0);
+    transform.velocity = Vec2(m_playerConfig.SPEED, m_playerConfig.JUMPSPEED);
     transform.scale    = Vec2(4.f, 4.f);
 }
 
@@ -169,7 +180,7 @@ void Scene_Play::update()
 
     sMovement();
     // sLifespan();
-    // sCollision();
+    sCollision();
     // sAnimation();
     sRender();
 }
@@ -192,16 +203,36 @@ void Scene_Play::sMovement()
     if (p_Input.right)
     {
         p_Transform.prevPos = p_Transform.pos;
-        p_Transform.pos += p_Transform.velocity;
+        p_Transform.pos.x += p_Transform.velocity.x;
         p_Transform.scale.x = 4;
     }
 
     if (p_Input.left)
     {
         p_Transform.prevPos = p_Transform.pos;
-        p_Transform.pos -= p_Transform.velocity;
+        p_Transform.pos.x -= p_Transform.velocity.x;
         p_Transform.scale.x = -4;
     }
+
+    // if (p_Input.up)
+    // {
+    //     p_Transform.prevPos = p_Transform.pos;
+    //     p_Transform.pos.y -= p_Transform.velocity.y;
+    // }
+
+    if (p_Input.up)
+    {
+        p_Transform.prevPos = p_Transform.pos;
+        p_Transform.pos.y += p_Transform.velocity.y;
+    }
+
+    if (p_Input.down)
+    {
+        p_Transform.prevPos = p_Transform.pos;
+        p_Transform.pos.y -= p_Transform.velocity.y;
+    }
+
+    p_Transform.pos.y += m_playerConfig.MAXSPEED * m_player->getComponent<CGravity>().gravity;
 }
 
 void Scene_Play::sLifespan()
@@ -214,8 +245,8 @@ void Scene_Play::sCollision()
     // REMEMBER: SFML's (0,0) position is on the TOP-LEFT corner
     //           This means jumping will have a negative y-component
     //           and gravity will have a positive y-component
-    //           Also, something BELOW something else will ahve a y value GREATER than it
-    //           Also, something ABOVE something else will ahve a y value LESS than it
+    //           Also, something BELOW something else will have a y value GREATER than it
+    //           Also, something ABOVE something else will have a y value LESS than it
 
     // TODO: Implement Physics::GetOverlap() function, use it inside this function
 
@@ -227,13 +258,43 @@ void Scene_Play::sCollision()
     //       used by the Animation system
     // TODO: Check to see if the player has fallen down a hole (y > height())
     // TODO: Don't let the player walk off the left side of the map
+
+    if (m_player->getComponent<CTransform>().pos.x <= 0)
+    {
+        // m_player->getComponent<CTransform>().pos.x += m_player->getComponent<CBoungingBox>().halfSize.x;
+        m_player->getComponent<CTransform>().pos.x += m_player->getComponent<CTransform>().velocity.x;
+    }
+
+    Physics p;
+    for (auto &e : m_entityManager.getEntities("tile"))
+    {
+        Vec2  overlap      = p.GetOverlap(e, m_player);
+        Vec2  prev_overlap = p.GetPreviousOverlap(e, m_player);
+        auto &p_Transform  = m_player->getComponent<CTransform>();
+        auto &e_Transform  = e->getComponent<CTransform>();
+
+        if (overlap.x > 0 && prev_overlap.y > 0)
+        {
+            if (p_Transform.pos.x < e_Transform.pos.x)
+                p_Transform.pos.x -= overlap.x;
+            if (p_Transform.pos.x > e_Transform.pos.x)
+                p_Transform.pos.x += overlap.x;
+        }
+        else if (overlap.y > 0 && prev_overlap.x > 0)
+        {
+            if (p_Transform.pos.y < e_Transform.pos.y)
+                p_Transform.pos.y -= overlap.y;
+            if (p_Transform.pos.y > e_Transform.pos.y)
+                p_Transform.pos.y += overlap.y;
+        }
+    }
 }
 
 void Scene_Play::sDoAction(const Action &action)
 {
     if (action.type() == "START")
     {
-        if (action.name() == "TOGGLE_TEXTIRE")
+        if (action.name() == "TOGGLE_TEXTURE")
             m_drawTextures = !m_drawTextures;
         else if (action.name() == "TOGGLE_COLLISION")
             m_drawCollision = !m_drawCollision;
@@ -247,6 +308,12 @@ void Scene_Play::sDoAction(const Action &action)
             m_player->getComponent<CInput>().right = true;
         else if (action.name() == "MOVE_BACKWARD")
             m_player->getComponent<CInput>().left = true;
+        else if (action.name() == "MOVE_UP")
+            m_player->getComponent<CInput>().up = true;
+        else if (action.name() == "MOVE_DOWN")
+            m_player->getComponent<CInput>().down = true;
+        else if (action.name() == "JUMP")
+            m_player->getComponent<CInput>().up = true;
     }
     else if (action.type() == "END")
     {
@@ -254,6 +321,12 @@ void Scene_Play::sDoAction(const Action &action)
             m_player->getComponent<CInput>().right = false;
         else if (action.name() == "MOVE_BACKWARD")
             m_player->getComponent<CInput>().left = false;
+        else if (action.name() == "MOVE_UP")
+            m_player->getComponent<CInput>().up = false;
+        else if (action.name() == "MOVE_DOWN")
+            m_player->getComponent<CInput>().down = false;
+        else if (action.name() == "JUMP")
+            m_player->getComponent<CInput>().up = false;
     }
 }
 
@@ -301,7 +374,6 @@ void Scene_Play::sRender()
             }
         }
     }
-
     // draw all Entity collision bounding boxes with a rectangleshape
     if (m_drawCollision)
     {

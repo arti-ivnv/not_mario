@@ -6,4 +6,16 @@ Tile Ground 4 0
 Tile Ground 5 0
 Tile Ground 6 0
 Tile Ground 7 0
+Tile Brick  6 3
+Tile MysteryBlock  7 3
+Tile Brick  8 3
+Tile Brick  9 3
+Tile MysteryBlock  10 3
+Tile Ground 10 0
+Tile Ground 13 0
+Tile Ground 14 0
+Tile Ground 15 0
+Tile Brick  11 3
 Dec SmallHill 1 1
+Player 3 6 64 64 5 -20 20 0.75 Buster
+//Player 3 6 64 64 5 -20 20 0.75 Buster

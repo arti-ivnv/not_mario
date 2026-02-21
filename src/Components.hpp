@@ -23,6 +23,7 @@ class CTransform : public Component
     CTransform() = default;
     CTransform(const Vec2 &p)
         : pos(p)
+        , prevPos(p)
     {
     }
     CTransform(const Vec2 &p, const Vec2 &sp, const Vec2 &sc, float a)
