@@ -199,6 +199,8 @@ void Scene_Play::sMovement()
     auto &p_Input     = m_player->getComponent<CInput>();
     auto &p_Transform = m_player->getComponent<CTransform>();
     auto &p_Animation = m_player->getComponent<CAnimation>();
+    auto &p_Gravity   = m_player->getComponent<CGravity>();
+    auto &p_State     = m_player->getComponent<CState>();
 
     if (p_Input.right)
     {
@@ -222,8 +224,14 @@ void Scene_Play::sMovement()
 
     if (p_Input.up)
     {
-        p_Transform.prevPos = p_Transform.pos;
-        p_Transform.pos.y += p_Transform.velocity.y;
+        if (p_State.state == "jumping")
+        {
+            p_Transform.prevPos = p_Transform.pos;
+            p_Transform.pos.y += p_Transform.velocity.y;
+        }
+        std::cout << "state: " << p_State.state << std::endl;
+        // p_Transform.prevPos = p_Transform.pos;
+        // p_Transform.pos.y += p_Transform.velocity.y;
     }
 
     if (p_Input.down)
@@ -268,24 +276,41 @@ void Scene_Play::sCollision()
     Physics p;
     for (auto &e : m_entityManager.getEntities("tile"))
     {
-        Vec2  overlap      = p.GetOverlap(e, m_player);
-        Vec2  prev_overlap = p.GetPreviousOverlap(e, m_player);
-        auto &p_Transform  = m_player->getComponent<CTransform>();
-        auto &e_Transform  = e->getComponent<CTransform>();
+        Vec2 overlap      = p.GetOverlap(e, m_player);
+        Vec2 prev_overlap = p.GetPreviousOverlap(e, m_player);
 
+        auto &p_Transform = m_player->getComponent<CTransform>();
+        auto &p_State     = m_player->getComponent<CState>();
+
+        auto &e_Transform = e->getComponent<CTransform>();
+
+        // LEFT RIGHT COLLISIONS
         if (overlap.x > 0 && prev_overlap.y > 0)
         {
+            // RIGHT --> LEFT
             if (p_Transform.pos.x < e_Transform.pos.x)
                 p_Transform.pos.x -= overlap.x;
+            // LEFT --> RIGHT
             if (p_Transform.pos.x > e_Transform.pos.x)
                 p_Transform.pos.x += overlap.x;
         }
+        // TOP BOTTOM COLLISIONS
         else if (overlap.y > 0 && prev_overlap.x > 0)
         {
+            // TOP --> BOTTOM
             if (p_Transform.pos.y < e_Transform.pos.y)
+            {
+                if (p_State.state == "jumping")
+                {
+                    p_State.state = "idle";
+                }
                 p_Transform.pos.y -= overlap.y;
+            }
+            // BOTTOM --> TOP
             if (p_Transform.pos.y > e_Transform.pos.y)
+            {
                 p_Transform.pos.y += overlap.y;
+            }
         }
     }
 }
@@ -308,12 +333,18 @@ void Scene_Play::sDoAction(const Action &action)
             m_player->getComponent<CInput>().right = true;
         else if (action.name() == "MOVE_BACKWARD")
             m_player->getComponent<CInput>().left = true;
-        else if (action.name() == "MOVE_UP")
-            m_player->getComponent<CInput>().up = true;
+        // else if (action.name() == "MOVE_UP")
+        //     m_player->getComponent<CInput>().up = true;
         else if (action.name() == "MOVE_DOWN")
             m_player->getComponent<CInput>().down = true;
         else if (action.name() == "JUMP")
-            m_player->getComponent<CInput>().up = true;
+        {
+            if (m_player->getComponent<CState>().state != "jumping")
+            {
+                m_player->getComponent<CInput>().up    = true;
+                m_player->getComponent<CState>().state = "jumping";
+            }
+        }
     }
     else if (action.type() == "END")
     {
@@ -326,7 +357,10 @@ void Scene_Play::sDoAction(const Action &action)
         else if (action.name() == "MOVE_DOWN")
             m_player->getComponent<CInput>().down = false;
         else if (action.name() == "JUMP")
+        {
             m_player->getComponent<CInput>().up = false;
+            // m_player->getComponent<CState>().state = "idle";
+        }
     }
 }
 
