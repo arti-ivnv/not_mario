@@ -216,6 +216,11 @@ void Scene_Play::sMovement()
         p_Transform.scale.x = -4;
     }
 
+    if (!p_Input.up)
+    {
+        p_Transform.max_jump_height = p_Transform.pos.y - (m_gridSize.y * 4.7);
+    }
+
     // if (p_Input.up)
     // {
     //     p_Transform.prevPos = p_Transform.pos;
@@ -224,14 +229,15 @@ void Scene_Play::sMovement()
 
     if (p_Input.up)
     {
-        if (p_State.state == "jumping")
+        if (p_State.state == "jumping" && p_Transform.max_jump_height <= p_Transform.pos.y)
         {
             p_Transform.prevPos = p_Transform.pos;
             p_Transform.pos.y += p_Transform.velocity.y;
         }
-        std::cout << "state: " << p_State.state << std::endl;
-        // p_Transform.prevPos = p_Transform.pos;
-        // p_Transform.pos.y += p_Transform.velocity.y;
+        else if (p_Transform.max_jump_height >= p_Transform.pos.y)
+        {
+            p_State.state = "falling";
+        }
     }
 
     if (p_Input.down)
@@ -240,7 +246,8 @@ void Scene_Play::sMovement()
         p_Transform.pos.y -= p_Transform.velocity.y;
     }
 
-    p_Transform.pos.y += m_playerConfig.MAXSPEED * m_player->getComponent<CGravity>().gravity;
+    if (p_State.state != "jumping")
+        p_Transform.pos.y += m_playerConfig.MAXSPEED * m_player->getComponent<CGravity>().gravity;
 }
 
 void Scene_Play::sLifespan()
@@ -281,6 +288,7 @@ void Scene_Play::sCollision()
 
         auto &p_Transform = m_player->getComponent<CTransform>();
         auto &p_State     = m_player->getComponent<CState>();
+        auto &p_Input     = m_player->getComponent<CInput>();
 
         auto &e_Transform = e->getComponent<CTransform>();
 
@@ -300,15 +308,22 @@ void Scene_Play::sCollision()
             // TOP --> BOTTOM
             if (p_Transform.pos.y < e_Transform.pos.y)
             {
-                if (p_State.state == "jumping")
+                // TODO: Probably use later
+                if (!p_Input.canJump)
                 {
-                    p_State.state = "idle";
+                    p_Input.canJump = true;
+                    p_State.state   = "idle";
                 }
                 p_Transform.pos.y -= overlap.y;
             }
             // BOTTOM --> TOP
             if (p_Transform.pos.y > e_Transform.pos.y)
             {
+                if (!p_Input.canJump)
+                {
+                    p_Input.canJump = true;
+                    p_State.state   = "idle";
+                }
                 p_Transform.pos.y += overlap.y;
             }
         }
@@ -339,10 +354,12 @@ void Scene_Play::sDoAction(const Action &action)
             m_player->getComponent<CInput>().down = true;
         else if (action.name() == "JUMP")
         {
-            if (m_player->getComponent<CState>().state != "jumping")
+            if (m_player->getComponent<CInput>().canJump)
             {
-                m_player->getComponent<CInput>().up    = true;
-                m_player->getComponent<CState>().state = "jumping";
+
+                m_player->getComponent<CInput>().up      = true;
+                m_player->getComponent<CInput>().canJump = false;
+                m_player->getComponent<CState>().state   = "jumping";
             }
         }
     }
@@ -358,8 +375,9 @@ void Scene_Play::sDoAction(const Action &action)
             m_player->getComponent<CInput>().down = false;
         else if (action.name() == "JUMP")
         {
-            m_player->getComponent<CInput>().up = false;
-            // m_player->getComponent<CState>().state = "idle";
+            m_player->getComponent<CInput>().up      = false;
+            m_player->getComponent<CInput>().canJump = false;
+            m_player->getComponent<CState>().state   = "falling";
         }
     }
 }

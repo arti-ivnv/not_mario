@@ -14,11 +14,12 @@ class Component
 class CTransform : public Component
 {
   public:
-    Vec2  pos      = {0.0, 0.0};
-    Vec2  prevPos  = {0.0, 0.0};
-    Vec2  scale    = {1.0, 1.0};
-    Vec2  velocity = {0.0, 0.0};
-    float angle    = 0;
+    Vec2  pos             = {0.0, 0.0};
+    Vec2  prevPos         = {0.0, 0.0};
+    Vec2  scale           = {1.0, 1.0};
+    Vec2  velocity        = {0.0, 0.0};
+    float max_jump_height = 0;
+    float angle           = 0;
 
     CTransform() = default;
     CTransform(const Vec2 &p)
@@ -107,6 +108,7 @@ class CState : public Component
 {
   public:
     std::string state = "jumping";
+    // std::string state = "falling";
 
     CState() = default;
     CState(const std::string &s)
