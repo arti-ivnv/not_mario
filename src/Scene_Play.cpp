@@ -181,7 +181,7 @@ void Scene_Play::update()
     sMovement();
     // sLifespan();
     sCollision();
-    // sAnimation();
+    sAnimation();
     sRender();
 }
 
@@ -240,11 +240,11 @@ void Scene_Play::sMovement()
         }
     }
 
-    if (p_Input.down)
-    {
-        p_Transform.prevPos = p_Transform.pos;
-        p_Transform.pos.y -= p_Transform.velocity.y;
-    }
+    // if (p_Input.down)
+    // {
+    //     p_Transform.prevPos = p_Transform.pos;
+    //     p_Transform.pos.y -= p_Transform.velocity.y;
+    // }
 
     if (p_State.state != "jumping")
         p_Transform.pos.y += m_playerConfig.MAXSPEED * m_player->getComponent<CGravity>().gravity;
@@ -267,7 +267,7 @@ void Scene_Play::sCollision()
 
     // TODO: Implement bullet / tile collisions
     //       Destroy the tile if it has a Brick animation
-    // TODO: Implament player / tile collisions and resolutions
+    // TODO: Implement player / tile collisions and resolutions
     //       Update the CState component of the player to store whether
     //       it is currently on the ground or in the air. This will be
     //       used by the Animation system
@@ -291,6 +291,7 @@ void Scene_Play::sCollision()
         auto &p_Input     = m_player->getComponent<CInput>();
 
         auto &e_Transform = e->getComponent<CTransform>();
+        // std::cout << "p_Input.canJump: " << p_Input.canJump << std::endl;
 
         // LEFT RIGHT COLLISIONS
         if (overlap.x > 0 && prev_overlap.y > 0)
@@ -312,7 +313,7 @@ void Scene_Play::sCollision()
                 if (!p_Input.canJump)
                 {
                     p_Input.canJump = true;
-                    p_State.state   = "idle";
+                    p_State.state   = (p_Input.left || p_Input.right) ? "run" : "idle";
                 }
                 p_Transform.pos.y -= overlap.y;
             }
@@ -322,7 +323,7 @@ void Scene_Play::sCollision()
                 if (!p_Input.canJump)
                 {
                     p_Input.canJump = true;
-                    p_State.state   = "idle";
+                    p_State.state   = (p_Input.left || p_Input.right) ? "run" : "idle";
                 }
                 p_Transform.pos.y += overlap.y;
             }
@@ -345,9 +346,15 @@ void Scene_Play::sDoAction(const Action &action)
         else if (action.name() == "QUIT")
             onEnd();
         else if (action.name() == "MOVE_FORWARD")
+        {
             m_player->getComponent<CInput>().right = true;
+            m_player->getComponent<CState>().state = "run";
+        }
         else if (action.name() == "MOVE_BACKWARD")
-            m_player->getComponent<CInput>().left = true;
+        {
+            m_player->getComponent<CInput>().left  = true;
+            m_player->getComponent<CState>().state = "run";
+        }
         // else if (action.name() == "MOVE_UP")
         //     m_player->getComponent<CInput>().up = true;
         else if (action.name() == "MOVE_DOWN")
@@ -366,9 +373,15 @@ void Scene_Play::sDoAction(const Action &action)
     else if (action.type() == "END")
     {
         if (action.name() == "MOVE_FORWARD")
+        {
             m_player->getComponent<CInput>().right = false;
+            m_player->getComponent<CState>().state = "idle";
+        }
         else if (action.name() == "MOVE_BACKWARD")
-            m_player->getComponent<CInput>().left = false;
+        {
+            m_player->getComponent<CInput>().left  = false;
+            m_player->getComponent<CState>().state = "idle";
+        }
         else if (action.name() == "MOVE_UP")
             m_player->getComponent<CInput>().up = false;
         else if (action.name() == "MOVE_DOWN")
@@ -384,6 +397,41 @@ void Scene_Play::sDoAction(const Action &action)
 
 void Scene_Play::sAnimation()
 {
+    auto &p_state = m_player->getComponent<CState>();
+
+    // if (p_state.state == "air")
+    // {
+    //     m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Air"));
+    // }
+
+    if (p_state.state == "run")
+    {
+        if (m_player->getComponent<CAnimation>().animation.getName() != "Run")
+            m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Run"), true);
+    }
+    if (p_state.state == "jumping")
+    {
+        if (m_player->getComponent<CAnimation>().animation.getName() != "Jump")
+            m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Jump"), true);
+    }
+    if (p_state.state == "idle")
+    {
+        if (m_player->getComponent<CAnimation>().animation.getName() != "Idle")
+            m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Idle"), true);
+    }
+
+    for (auto &e : m_entityManager.getEntities())
+    {
+        if (e->hasComponent<CAnimation>())
+        {
+            e->getComponent<CAnimation>().animation.update();
+            if (!e->getComponent<CAnimation>().repeat && e->getComponent<CAnimation>().animation.hasEnded())
+            {
+                e->destroy();
+            }
+        }
+    }
+
     // TODO: Complete the Animation class code first
 
     // TODO: set the animation of the player based on its CState component

@@ -27,6 +27,14 @@ void Animation::update()
     // add the speed variable to the current frame
     m_currentFrame++;
 
+    size_t animationFrame = (m_currentFrame / m_speed) % m_frameCount;
+    if (m_name == "Run" || m_name == "Idle")
+    {
+        std::cout << "Animation Name: " << m_name << std::endl;
+        std::cout << "Animation Frame: " << animationFrame << std::endl;
+    }
+    m_sprite.setTextureRect(sf::IntRect(std::floor(animationFrame) * m_size.x, 0, m_size.x, m_size.y));
+
     // TODO: 1) calculate the correct frame of animation to play based on currentFrame and speed
     // TODO: 2) set the texture rectangle properly (see constructor for sample)
 }
@@ -34,7 +42,8 @@ void Animation::update()
 bool Animation::hasEnded() const
 {
     // TODO: detect when animation has ended (last frame was played) and return true
-    return false;
+
+    return m_currentFrame == m_frameCount;
 }
 
 const std::string &Animation::getName() const

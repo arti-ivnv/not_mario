@@ -119,9 +119,5 @@ void Scene_Menu::sRender()
         m_game->window().draw(temp);
     }
 
-    // auto rect = sf::RectangleShape(sf::Vector2f(64, 64));
-    // rect.setTexture(&m_game->assets().getTexture("TexIdle"));
-    // m_game->window().draw(rect);
-
     m_game->window().display();
 }
