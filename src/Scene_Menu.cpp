@@ -82,6 +82,12 @@ void Scene_Menu::sRender()
 {
     m_game->window().clear(sf::Color(111, 111, 246, 255));
 
+    float windowCenterX = m_game->window().getSize().x / 2.0f;
+
+    sf::View view = m_game->window().getView();
+    view.setCenter(windowCenterX, m_game->window().getSize().y - view.getCenter().y);
+    m_game->window().setView(view);
+
     // DRAW TITLE
     m_menuText.setString(m_title);
     m_game->window().draw(m_menuText);
