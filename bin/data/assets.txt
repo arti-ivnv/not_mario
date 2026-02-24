@@ -11,6 +11,8 @@ Texture TexCloud3           assets/textures/Cloud3.png
 Texture TexEmptyBlock       assets/textures/EmptyBlock.png
 Texture TexHardBlock        assets/textures/HardBlock.png
 Texture TexMysteryBlock     assets/textures/MysteryBlock.png
+Texture TexPipeBottom       assets/textures/PipeBottom.png
+Texture TexPipeTop          assets/textures/PipeTop.png
 
 Animation Idle              TexIdle             1 0
 Animation Ground            TexGround           1 0
@@ -22,3 +24,5 @@ Animation Cloud3            TexCloud3           1 0
 Animation EmptyBlock        TexEmptyBlock       1 0
 Animation HardBlock         TexHardBlock        1 0
 Animation MysteryBlock      TexMysteryBlock     1 0
+Animation PipeBottom        TexPipeBottom       1 0
+Animation PipeTop           TexPipeTop          1 0

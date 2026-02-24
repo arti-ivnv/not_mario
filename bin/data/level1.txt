@@ -6,16 +6,41 @@ Tile Ground 4 0
 Tile Ground 5 0
 Tile Ground 6 0
 Tile Ground 7 0
-Tile Brick  6 3
-Tile MysteryBlock  7 3
-Tile Brick  8 3
-Tile Brick  9 3
-Tile MysteryBlock  10 3
+Tile Ground 8 0
+Tile Ground 9 0
 Tile Ground 10 0
+Tile Ground 11 0
+Tile Ground 12 0
 Tile Ground 13 0
 Tile Ground 14 0
 Tile Ground 15 0
-Tile Brick  11 3
+Tile Ground 16 0
+Tile Ground 17 0
+Tile Ground 18 0
+Tile Ground 19 0
+Tile Ground 20 0
+Tile Ground 21 0
+Tile PipeBottom 17 1
+Tile PipeBottom 17 2
+Tile PipeTop 17 3
+
+// Decorations
 Dec SmallHill 1 1
-Player 3 6 64 64 5 -20 20 0.75 Buster
+Dec Cloud1 4 10
+Dec Cloud3 14 8
+
+// Pyramid 
+Tile Brick          6 3
+Tile MysteryBlock   7 3
+Tile Brick          8 3
+Tile MysteryBlock   9 3
+Tile Brick          10 3
+Tile MysteryBlock   11 3
+Tile Brick          12 3
+Tile MysteryBlock   8 6
+Tile Brick          9 6
+Tile MysteryBlock   10 6
+Tile MysteryBlock   9 9
+
+Player 3 6 64 52 5 -20 20 0.75 Buster
 //Player 3 6 64 64 5 -20 20 0.75 Buster
