@@ -204,6 +204,7 @@ void Scene_Play::sMovement()
 
     if (p_Input.right)
     {
+        p_State.state       = "run";
         p_Transform.prevPos = p_Transform.pos;
         p_Transform.pos.x += p_Transform.velocity.x;
         p_Transform.scale.x = 4;
@@ -211,6 +212,7 @@ void Scene_Play::sMovement()
 
     if (p_Input.left)
     {
+        p_State.state       = "run";
         p_Transform.prevPos = p_Transform.pos;
         p_Transform.pos.x -= p_Transform.velocity.x;
         p_Transform.scale.x = -4;
@@ -229,6 +231,8 @@ void Scene_Play::sMovement()
 
     if (p_Input.up)
     {
+        p_State.state   = "jumping";
+        p_Input.canJump = false;
         if (p_State.state == "jumping" && p_Transform.max_jump_height <= p_Transform.pos.y)
         {
             p_Transform.prevPos = p_Transform.pos;
@@ -349,12 +353,12 @@ void Scene_Play::sDoAction(const Action &action)
         else if (action.name() == "MOVE_FORWARD")
         {
             m_player->getComponent<CInput>().right = true;
-            m_player->getComponent<CState>().state = "run";
+            // m_player->getComponent<CState>().state = "run";
         }
         else if (action.name() == "MOVE_BACKWARD")
         {
-            m_player->getComponent<CInput>().left  = true;
-            m_player->getComponent<CState>().state = "run";
+            m_player->getComponent<CInput>().left = true;
+            // m_player->getComponent<CState>().state = "run";
         }
         // else if (action.name() == "MOVE_UP")
         //     m_player->getComponent<CInput>().up = true;
@@ -365,9 +369,9 @@ void Scene_Play::sDoAction(const Action &action)
             if (m_player->getComponent<CInput>().canJump)
             {
 
-                m_player->getComponent<CInput>().up      = true;
-                m_player->getComponent<CInput>().canJump = false;
-                m_player->getComponent<CState>().state   = "jumping";
+                m_player->getComponent<CInput>().up = true;
+                // m_player->getComponent<CInput>().canJump = false;
+                // m_player->getComponent<CState>().state   = "jumping";
             }
         }
     }
@@ -376,16 +380,16 @@ void Scene_Play::sDoAction(const Action &action)
         if (action.name() == "MOVE_FORWARD")
         {
             m_player->getComponent<CInput>().right = false;
-            if (!m_player->getComponent<CInput>().right && !m_player->getComponent<CInput>().up &&
-                !m_player->getComponent<CInput>().left && !m_player->getComponent<CInput>().down)
-                m_player->getComponent<CState>().state = "idle";
+            // if (!m_player->getComponent<CInput>().right && !m_player->getComponent<CInput>().up &&
+            //     !m_player->getComponent<CInput>().left && !m_player->getComponent<CInput>().down)
+            //     m_player->getComponent<CState>().state = "idle";
         }
         else if (action.name() == "MOVE_BACKWARD")
         {
             m_player->getComponent<CInput>().left = false;
-            if (!m_player->getComponent<CInput>().right && !m_player->getComponent<CInput>().up &&
-                !m_player->getComponent<CInput>().left && !m_player->getComponent<CInput>().down)
-                m_player->getComponent<CState>().state = "idle";
+            // if (!m_player->getComponent<CInput>().right && !m_player->getComponent<CInput>().up &&
+            //     !m_player->getComponent<CInput>().left && !m_player->getComponent<CInput>().down)
+            //     m_player->getComponent<CState>().state = "idle";
         }
         else if (action.name() == "MOVE_UP")
             m_player->getComponent<CInput>().up = false;
@@ -393,9 +397,9 @@ void Scene_Play::sDoAction(const Action &action)
             m_player->getComponent<CInput>().down = false;
         else if (action.name() == "JUMP")
         {
-            m_player->getComponent<CInput>().up      = false;
-            m_player->getComponent<CInput>().canJump = false;
-            m_player->getComponent<CState>().state   = "falling";
+            m_player->getComponent<CInput>().up = false;
+            // m_player->getComponent<CInput>().canJump = false;
+            // m_player->getComponent<CState>().state   = "falling";
         }
     }
 }
