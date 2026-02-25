@@ -325,6 +325,7 @@ void Scene_Play::sCollision()
                     p_Input.canJump = true;
                     p_State.state   = (p_Input.left || p_Input.right) ? "run" : "idle";
                 }
+
                 p_Transform.pos.y += overlap.y;
             }
         }
@@ -375,12 +376,16 @@ void Scene_Play::sDoAction(const Action &action)
         if (action.name() == "MOVE_FORWARD")
         {
             m_player->getComponent<CInput>().right = false;
-            m_player->getComponent<CState>().state = "idle";
+            if (!m_player->getComponent<CInput>().right && !m_player->getComponent<CInput>().up &&
+                !m_player->getComponent<CInput>().left && !m_player->getComponent<CInput>().down)
+                m_player->getComponent<CState>().state = "idle";
         }
         else if (action.name() == "MOVE_BACKWARD")
         {
-            m_player->getComponent<CInput>().left  = false;
-            m_player->getComponent<CState>().state = "idle";
+            m_player->getComponent<CInput>().left = false;
+            if (!m_player->getComponent<CInput>().right && !m_player->getComponent<CInput>().up &&
+                !m_player->getComponent<CInput>().left && !m_player->getComponent<CInput>().down)
+                m_player->getComponent<CState>().state = "idle";
         }
         else if (action.name() == "MOVE_UP")
             m_player->getComponent<CInput>().up = false;

@@ -29,6 +29,6 @@ Animation Cloud2            TexCloud2           1 0
 Animation Cloud3            TexCloud3           1 0
 Animation EmptyBlock        TexEmptyBlock       1 0
 Animation HardBlock         TexHardBlock        1 0
-Animation MysteryBlock      TexMysteryBlock     1 0
+Animation MysteryBlock      TexMysteryBlock     1 1
 Animation PipeBottom        TexPipeBottom       1 0
 Animation PipeTop           TexPipeTop          1 0

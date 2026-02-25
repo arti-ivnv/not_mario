@@ -28,11 +28,30 @@ void Animation::update()
     m_currentFrame++;
 
     size_t animationFrame = (m_currentFrame / m_speed) % m_frameCount;
-    if (m_name == "Run" || m_name == "Idle")
+    size_t fs             = m_currentFrame / m_speed;
+
+    if (m_name == "MysteryBlock")
     {
-        std::cout << "Animation Name: " << m_name << std::endl;
-        std::cout << "Animation Frame: " << animationFrame << std::endl;
+        // std::cout << "animationFrame: " << animationFrame << std::endl;
+        // std::cout << "fs: " << fs << std::endl;
+        if (fs % 20 == 0)
+        {
+            sf::Color c = m_sprite.getColor();
+
+            int r = c.r, g = c.g, b = c.b;
+
+            if (r == 255 && g == 255 && b == 255)
+            {
+                r = 225;
+                g = 195;
+                b = 225;
+                m_sprite.setColor(sf::Color(r, g, b));
+            }
+            else
+                m_sprite.setColor(sf::Color(255, 255, 255));
+        }
     }
+
     m_sprite.setTextureRect(sf::IntRect(std::floor(animationFrame) * m_size.x, 0, m_size.x, m_size.y));
 
     // TODO: 1) calculate the correct frame of animation to play based on currentFrame and speed
@@ -42,7 +61,6 @@ void Animation::update()
 bool Animation::hasEnded() const
 {
     // TODO: detect when animation has ended (last frame was played) and return true
-
     return m_currentFrame == m_frameCount;
 }
 
