@@ -202,6 +202,8 @@ void Scene_Play::sMovement()
     auto &p_Gravity   = m_player->getComponent<CGravity>();
     auto &p_State     = m_player->getComponent<CState>();
 
+    std::cout << "p_State: " << p_State.state << std::endl;
+
     if (p_Input.right)
     {
         p_State.state       = "run";
@@ -218,40 +220,30 @@ void Scene_Play::sMovement()
         p_Transform.scale.x = -4;
     }
 
-    if (!p_Input.up)
-    {
-        p_Transform.max_jump_height = p_Transform.pos.y - (m_gridSize.y * 4.7);
-    }
-
-    // if (p_Input.up)
-    // {
-    //     p_Transform.prevPos = p_Transform.pos;
-    //     p_Transform.pos.y -= p_Transform.velocity.y;
-    // }
-
     if (p_Input.up)
     {
-        p_State.state   = "jumping";
-        p_Input.canJump = false;
-        if (p_State.state == "jumping" && p_Transform.max_jump_height <= p_Transform.pos.y)
+        p_State.state = "jumping";
+        if (p_Transform.max_jump_height <= p_Transform.pos.y)
         {
             p_Transform.prevPos = p_Transform.pos;
             p_Transform.pos.y += p_Transform.velocity.y;
         }
-        else if (p_Transform.max_jump_height >= p_Transform.pos.y)
+        else if (p_Transform.max_jump_height > p_Transform.pos.y)
         {
-            p_State.state = "falling";
+            p_State.state = "air";
+            p_Input.up    = false;
         }
     }
-
-    // if (p_Input.down)
-    // {
-    //     p_Transform.prevPos = p_Transform.pos;
-    //     p_Transform.pos.y -= p_Transform.velocity.y;
-    // }
+    else
+    {
+        p_Transform.max_jump_height = p_Transform.pos.y - (m_gridSize.y * 4.7);
+    }
 
     if (p_State.state != "jumping")
+    {
+        p_Transform.prevPos.y = p_Transform.pos.y;
         p_Transform.pos.y += m_playerConfig.MAXSPEED * m_player->getComponent<CGravity>().gravity;
+    }
 }
 
 void Scene_Play::sLifespan()
@@ -295,9 +287,8 @@ void Scene_Play::sCollision()
         auto &p_Input     = m_player->getComponent<CInput>();
 
         auto &e_Transform = e->getComponent<CTransform>();
-        // std::cout << "p_Input.canJump: " << p_Input.canJump << std::endl;
 
-        // LEFT RIGHT COLLISIONS
+        // LEFT-RIGHT COLLISIONS
         if (overlap.x > 0 && prev_overlap.y > 0)
         {
             // RIGHT --> LEFT
@@ -307,32 +298,44 @@ void Scene_Play::sCollision()
             if (p_Transform.pos.x > e_Transform.pos.x)
                 p_Transform.pos.x += overlap.x;
         }
-        // TOP BOTTOM COLLISIONS
-        else if (overlap.y > 0 && prev_overlap.x > 0)
+        // TOP-BOTTOM COLLISIONS
+        if (overlap.y > 0 && prev_overlap.x > 0)
         {
             // TOP --> BOTTOM
             if (p_Transform.pos.y < e_Transform.pos.y)
             {
                 // TODO: Probably use later
-                if (!p_Input.canJump)
-                {
-                    p_Input.canJump = true;
-                    p_State.state   = (p_Input.left || p_Input.right) ? "run" : "idle";
-                }
+                // if (!p_Input.canJump)
+                // {
+                std::cout << "HERE" << std::endl;
+                p_Input.canJump = true;
+                p_State.state   = (p_Input.left || p_Input.right) ? "run" : "idle";
+                // }
                 p_Transform.pos.y -= overlap.y;
             }
             // BOTTOM --> TOP
             if (p_Transform.pos.y > e_Transform.pos.y)
             {
-                if (!p_Input.canJump)
-                {
-                    p_Input.canJump = true;
-                    p_State.state   = (p_Input.left || p_Input.right) ? "run" : "idle";
-                }
 
                 p_Transform.pos.y += overlap.y;
+                p_State.state   = "air";
+                p_Input.up      = false;
+                p_Input.canJump = false;
             }
         }
+
+        if (overlap.y < 0 && prev_overlap.x < 0)
+        {
+            if (p_Transform.pos.y < e_Transform.pos.y)
+            {
+                p_State.state   = "air";
+                p_Input.canJump = false;
+            }
+        }
+        // std::cout << "overlap.x: " << overlap.x << std::endl;
+        // std::cout << "overlap.prev.x: " << prev_overlap.x << std::endl;
+        // std::cout << "overlap.y: " << overlap.y << std::endl;
+        // std::cout << "overlap.prev.y: " << prev_overlap.y << std::endl;
     }
 }
 
@@ -380,16 +383,10 @@ void Scene_Play::sDoAction(const Action &action)
         if (action.name() == "MOVE_FORWARD")
         {
             m_player->getComponent<CInput>().right = false;
-            // if (!m_player->getComponent<CInput>().right && !m_player->getComponent<CInput>().up &&
-            //     !m_player->getComponent<CInput>().left && !m_player->getComponent<CInput>().down)
-            //     m_player->getComponent<CState>().state = "idle";
         }
         else if (action.name() == "MOVE_BACKWARD")
         {
             m_player->getComponent<CInput>().left = false;
-            // if (!m_player->getComponent<CInput>().right && !m_player->getComponent<CInput>().up &&
-            //     !m_player->getComponent<CInput>().left && !m_player->getComponent<CInput>().down)
-            //     m_player->getComponent<CState>().state = "idle";
         }
         else if (action.name() == "MOVE_UP")
             m_player->getComponent<CInput>().up = false;
@@ -398,8 +395,6 @@ void Scene_Play::sDoAction(const Action &action)
         else if (action.name() == "JUMP")
         {
             m_player->getComponent<CInput>().up = false;
-            // m_player->getComponent<CInput>().canJump = false;
-            // m_player->getComponent<CState>().state   = "falling";
         }
     }
 }
@@ -408,10 +403,10 @@ void Scene_Play::sAnimation()
 {
     auto &p_state = m_player->getComponent<CState>();
 
-    // if (p_state.state == "air")
-    // {
-    //     m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Air"));
-    // }
+    if (p_state.state == "air")
+    {
+        m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Jump"), true);
+    }
 
     if (p_state.state == "run")
     {
