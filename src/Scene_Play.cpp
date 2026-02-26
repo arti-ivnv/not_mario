@@ -198,7 +198,6 @@ void Scene_Play::sMovement()
     // TODO: Setting an entity's scale.x to -1/1 will make it face to the left/right
     auto &p_Input     = m_player->getComponent<CInput>();
     auto &p_Transform = m_player->getComponent<CTransform>();
-    auto &p_Animation = m_player->getComponent<CAnimation>();
     auto &p_Gravity   = m_player->getComponent<CGravity>();
     auto &p_State     = m_player->getComponent<CState>();
 
@@ -228,8 +227,7 @@ void Scene_Play::sMovement()
         }
         else if (p_Transform.max_jump_height > p_Transform.pos.y)
         {
-            p_State.state = "air";
-            p_Input.up    = false;
+            p_Input.up = false;
         }
     }
     else
@@ -240,7 +238,7 @@ void Scene_Play::sMovement()
     if (p_State.state != "jumping")
     {
         p_Transform.prevPos.y = p_Transform.pos.y;
-        p_Transform.pos.y += m_playerConfig.MAXSPEED * m_player->getComponent<CGravity>().gravity;
+        p_Transform.pos.y += m_playerConfig.MAXSPEED * p_Gravity.gravity;
     }
 }
 
