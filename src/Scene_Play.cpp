@@ -266,10 +266,14 @@ void Scene_Play::sCollision()
     // TODO: Check to see if the player has fallen down a hole (y > height())
     // TODO: Don't let the player walk off the left side of the map
 
-    if (m_player->getComponent<CTransform>().pos.x <= 0)
+    auto &p_Transform = m_player->getComponent<CTransform>();
+    auto &p_State     = m_player->getComponent<CState>();
+    auto &p_Input     = m_player->getComponent<CInput>();
+
+    if (p_Transform.pos.x <= 0)
     {
         // m_player->getComponent<CTransform>().pos.x += m_player->getComponent<CBoungingBox>().halfSize.x;
-        m_player->getComponent<CTransform>().pos.x += m_player->getComponent<CTransform>().velocity.x;
+        p_Transform.pos.x += p_Transform.velocity.x;
     }
 
     Physics p;
@@ -277,10 +281,6 @@ void Scene_Play::sCollision()
     {
         Vec2 overlap      = p.GetOverlap(e, m_player);
         Vec2 prev_overlap = p.GetPreviousOverlap(e, m_player);
-
-        auto &p_Transform = m_player->getComponent<CTransform>();
-        auto &p_State     = m_player->getComponent<CState>();
-        auto &p_Input     = m_player->getComponent<CInput>();
 
         auto &e_Transform = e->getComponent<CTransform>();
 
