@@ -202,8 +202,6 @@ void Scene_Play::sMovement()
     auto &p_Gravity   = m_player->getComponent<CGravity>();
     auto &p_State     = m_player->getComponent<CState>();
 
-    std::cout << "p_State: " << p_State.state << std::endl;
-
     if (p_Input.right)
     {
         p_State.state       = "run";
@@ -304,14 +302,9 @@ void Scene_Play::sCollision()
             // TOP --> BOTTOM
             if (p_Transform.pos.y < e_Transform.pos.y)
             {
-                // TODO: Probably use later
-                // if (!p_Input.canJump)
-                // {
-                std::cout << "HERE" << std::endl;
+                p_Transform.pos.y -= overlap.y;
                 p_Input.canJump = true;
                 p_State.state   = (p_Input.left || p_Input.right) ? "run" : "idle";
-                // }
-                p_Transform.pos.y -= overlap.y;
             }
             // BOTTOM --> TOP
             if (p_Transform.pos.y > e_Transform.pos.y)
@@ -356,15 +349,11 @@ void Scene_Play::sDoAction(const Action &action)
         else if (action.name() == "MOVE_FORWARD")
         {
             m_player->getComponent<CInput>().right = true;
-            // m_player->getComponent<CState>().state = "run";
         }
         else if (action.name() == "MOVE_BACKWARD")
         {
             m_player->getComponent<CInput>().left = true;
-            // m_player->getComponent<CState>().state = "run";
         }
-        // else if (action.name() == "MOVE_UP")
-        //     m_player->getComponent<CInput>().up = true;
         else if (action.name() == "MOVE_DOWN")
             m_player->getComponent<CInput>().down = true;
         else if (action.name() == "JUMP")
@@ -373,8 +362,6 @@ void Scene_Play::sDoAction(const Action &action)
             {
 
                 m_player->getComponent<CInput>().up = true;
-                // m_player->getComponent<CInput>().canJump = false;
-                // m_player->getComponent<CState>().state   = "jumping";
             }
         }
     }
