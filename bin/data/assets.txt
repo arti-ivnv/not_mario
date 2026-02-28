@@ -3,7 +3,8 @@ Font cardot          assets/fonts/Cardot.ttf
 
 Texture TexIdle             assets/animations/Mario_Small_Idle.png
 Texture TexRun              assets/animations/Mario_Small_Run.png
-Texture TexJump              assets/animations/Mario_Small_Jump.png
+Texture TexJump             assets/animations/Mario_Small_Jump.png
+Texture TexBullet           assets/animations/Bullet.png
 
 Texture TexGround           assets/textures/GroundBlock.png
 Texture TexSmallHill        assets/textures/Hill1.png
@@ -20,6 +21,7 @@ Texture TexPipeTop          assets/textures/PipeTop.png
 Animation Idle              TexIdle             1 0
 Animation Run               TexRun              3 10
 Animation Jump              TexJump             1 0
+Animation Bullet            TexBullet           4 10
 
 Animation Ground            TexGround           1 0
 Animation SmallHill         TexSmallHill        1 0

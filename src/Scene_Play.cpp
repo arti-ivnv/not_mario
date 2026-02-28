@@ -22,6 +22,7 @@ void Scene_Play::init(const std::string &levelPath)
     registerAction(sf::Keyboard::S, "MOVE_DOWN");
     registerAction(sf::Keyboard::W, "MOVE_UP");
     registerAction(sf::Keyboard::Space, "JUMP");
+    registerAction(sf::Keyboard::K, "SHOOT");
 
     // TODO: Register all other gameplay Actions
     m_gridText.setCharacterSize(14);
@@ -167,9 +168,13 @@ void Scene_Play::spawnPlayer()
     transform.scale    = Vec2(4.f, 4.f);
 }
 
-void Scene_Play::spawnBullet(std::shared_ptr<Entity> entity)
+void Scene_Play::spawnBullet(std::shared_ptr<Entity> player)
 {
     // TODO: this should spawn a bullet at the given entiy, going in the direction entity is facing
+    std::shared_ptr<Entity> bullet = m_entityManager.addEntity("bullet");
+    bullet->addComponent<CAnimation>(m_game->assets().getAnimation("Bullet"), true);
+    bullet->addComponent<CTransform>(
+        Vec2(player->getComponent<CTransform>().pos.x + 32, player->getComponent<CTransform>().pos.y));
 }
 
 void Scene_Play::update()
@@ -233,6 +238,12 @@ void Scene_Play::sMovement()
     else
     {
         p_Transform.max_jump_height = p_Transform.pos.y - (m_gridSize.y * 4.7);
+    }
+
+    if (p_Input.shoot)
+    {
+        spawnBullet(m_player);
+        p_Input.canShoot = false;
     }
 
     if (p_State.state != "jumping")
@@ -362,6 +373,14 @@ void Scene_Play::sDoAction(const Action &action)
                 m_player->getComponent<CInput>().up = true;
             }
         }
+        else if (action.name() == "SHOOT")
+        {
+            if (m_player->getComponent<CInput>().canShoot)
+            {
+                m_player->getComponent<CInput>().shoot = true;
+                std::cout << "ooops \n";
+            }
+        }
     }
     else if (action.type() == "END")
     {
@@ -380,6 +399,11 @@ void Scene_Play::sDoAction(const Action &action)
         else if (action.name() == "JUMP")
         {
             m_player->getComponent<CInput>().up = false;
+        }
+        else if (action.name() == "SHOOT")
+        {
+            std::cout << "ooops \n";
+            m_player->getComponent<CInput>().shoot = false;
         }
     }
 }
@@ -407,6 +431,12 @@ void Scene_Play::sAnimation()
     {
         if (m_player->getComponent<CAnimation>().animation.getName() != "Idle")
             m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Idle"), true);
+    }
+    if (p_state.state == "shoot")
+    {
+        if (m_player->getComponent<CAnimation>().animation.getName() != "Idle")
+            m_player->addComponent<CAnimation>(m_game->assets().getAnimation("Idle"), true);
+        // TODO: Shoot
     }
 
     for (auto &e : m_entityManager.getEntities())
