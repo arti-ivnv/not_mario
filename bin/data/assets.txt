@@ -21,24 +21,31 @@ Texture TexMysteryBlock             assets/textures/MysteryBlock.png
 Texture TexMysteryBlockInactive     assets/textures/MysteryBlockInactive.png
 Texture TexPipeBottom               assets/textures/PipeBottom.png
 Texture TexPipeTop                  assets/textures/PipeTop.png
+Texture TexCastle                   assets/textures/Castle.png
+Texture TexFlag                     assets/textures/Flag.png
+Texture TexFlagPole                 assets/textures/FlagPole.png
 
-Animation Idle                      TexIdle             1 0
-Animation Run                       TexRun              3 10
-Animation Jump                      TexJump             1 0
-Animation Bullet                    TexBullet           4 7
 
-Animation Explosion                 TexExplosion        7 3
-Animation Coin                      TexCoin             7 3
+Animation Idle                      TexIdle                     1 0
+Animation Run                       TexRun                      3 10
+Animation Jump                      TexJump                     1 0
+Animation Bullet                    TexBullet                   4 7
 
-Animation Ground                    TexGround           1 0
-Animation SmallHill                 TexSmallHill        1 0
-Animation Brick                     TexBrick            1 0
-Animation Cloud1                    TexCloud1           1 0
-Animation Cloud2                    TexCloud2           1 0
-Animation Cloud3                    TexCloud3           1 0
-Animation EmptyBlock                TexEmptyBlock       1 0
-Animation HardBlock                 TexHardBlock        1 0
-Animation MysteryBlock              TexMysteryBlock     1 1
+Animation Explosion                 TexExplosion                7 3
+Animation Coin                      TexCoin                     7 3
+
+Animation Ground                    TexGround                   1 0
+Animation SmallHill                 TexSmallHill                1 0
+Animation Brick                     TexBrick                    1 0
+Animation Cloud1                    TexCloud1                   1 0
+Animation Cloud2                    TexCloud2                   1 0
+Animation Cloud3                    TexCloud3                   1 0
+Animation EmptyBlock                TexEmptyBlock               1 0
+Animation HardBlock                 TexHardBlock                1 0
+Animation MysteryBlock              TexMysteryBlock             1 1
 Animation MysteryBlockInactive      TexMysteryBlockInactive     1 0
-Animation PipeBottom                TexPipeBottom       1 0
-Animation PipeTop                   TexPipeTop          1 0
+Animation PipeBottom                TexPipeBottom               1 0
+Animation PipeTop                   TexPipeTop                  1 0
+Animation Castle                    TexCastle                   1 0
+Animation Flag                      TexFlag                     1 0
+Animation FlagPole                  TexFlagPole                 1 0

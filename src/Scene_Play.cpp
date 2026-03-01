@@ -185,9 +185,12 @@ void Scene_Play::update()
 
     // TODO: implement pause functionality
 
-    sMovement();
-    sLifespan();
-    sCollision();
+    if (!m_paused)
+    {
+        sMovement();
+        sLifespan();
+        sCollision();
+    }
     sAnimation();
     sRender();
 }
@@ -317,8 +320,6 @@ void Scene_Play::sCollision()
     }
     if (p_Transform.pos.y >= m_game->window().getSize().y)
     {
-        // m_player->getComponent<CTransform>().pos.x += m_player->getComponent<CBoungingBox>().halfSize.x;
-        m_player->destroy();
         spawnPlayer();
     }
 
@@ -335,10 +336,24 @@ void Scene_Play::sCollision()
         {
             // RIGHT --> LEFT
             if (p_Transform.pos.x < e_Transform.pos.x)
+            {
+                if (e->getComponent<CAnimation>().animation.getName() == "FlagPole")
+                {
+                    m_player->destroy();
+                    spawnPlayer();
+                }
                 p_Transform.pos.x -= overlap.x;
+            }
             // LEFT --> RIGHT
             if (p_Transform.pos.x > e_Transform.pos.x)
+            {
+                if (e->getComponent<CAnimation>().animation.getName() == "FlagPole")
+                {
+                    m_player->destroy();
+                    spawnPlayer();
+                }
                 p_Transform.pos.x += overlap.x;
+            }
         }
         // TOP-BOTTOM COLLISIONS
         if (overlap.y > 0 && prev_overlap.x > 0)
@@ -349,11 +364,13 @@ void Scene_Play::sCollision()
                 p_Transform.pos.y -= overlap.y;
                 p_Input.canJump = true;
                 p_State.state   = (p_Input.left || p_Input.right) ? "run" : "idle";
+                std::cout << e->getComponent<CAnimation>().animation.getName() << "\n ";
+                std::cout << m_player->getComponent<CAnimation>().animation.getName() << "\n ";
+                std::cout << p_State.state << " \n";
             }
             // BOTTOM --> TOP
             if (p_Transform.pos.y > e_Transform.pos.y)
             {
-
                 p_Transform.pos.y += overlap.y;
                 p_State.state   = "air";
                 p_Input.up      = false;
@@ -390,18 +407,15 @@ void Scene_Play::sCollision()
             }
         }
 
-        if (overlap.y < 0 && prev_overlap.x < 0)
+        if (overlap.y < 0 && !(prev_overlap.x < 0))
         {
             if (p_Transform.pos.y < e_Transform.pos.y)
             {
+                std::cout << p_Transform.pos.y << " | " << e_Transform.pos.y << '\n';
                 p_State.state   = "air";
                 p_Input.canJump = false;
             }
         }
-        // std::cout << "overlap.x: " << overlap.x << std::endl;
-        // std::cout << "overlap.prev.x: " << prev_overlap.x << std::endl;
-        // std::cout << "overlap.y: " << overlap.y << std::endl;
-        // std::cout << "overlap.prev.y: " << prev_overlap.y << std::endl;
     }
 
     for (auto &b : m_entityManager.getEntities("bullet"))
