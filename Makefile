@@ -16,6 +16,8 @@ SRC_DIR := ./src
 OBJ_DIR := ./obj
 INC_DIR := ./include
 BIN_DIR := ./bin
+ICON_NAME := ./bin/NotMario.icns
+DMG_NAME := Not_Mario_v1.dmg
 
 # Mac-specific deployment Paths
 APP_BUNDLE := $(OUTPUT).app
@@ -72,12 +74,16 @@ deploy: $(OUTPUT)
 			if [ -d "bin/data" ]; then cp -r bin/data $(RESOURCES)/; fi
 			if [ -d "bin/assets" ]; then cp -r bin/assets $(RESOURCES)/; fi
 
+# 		Step 3.5 - Copy Icon
+		if [ -f "$(ICON_NAME)" ]; then cp $(ICON_NAME) $(RESOURCES)/; fi
+
 # 		Step 4 - Generate Info.plist
 		@echo '<?xml version="1.0" encoding="UTF-8"?>' > $(CONTENTS)/Info.plist
 		@echo '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com">' >> $(CONTENTS)/Info.plist
 		@echo '<plist version="1.0"><dict>' >> $(CONTENTS)/Info.plist
 		@echo '    <key>CFBundleExecutable</key><string>$(OUTPUT)</string>' >> $(CONTENTS)/Info.plist
-		@echo '    <key>CFBundleIdentifier</key><string>com.yourname.$(OUTPUT)</string>' >> $(CONTENTS)/Info.plist
+		@echo '    <key>CFBundleIconFile</key><string>$(ICON_NAME)</string>' >> $(CONTENTS)/Info.plist
+		@echo '    <key>CFBundleIdentifier</key><string>tech.arti-games.$(OUTPUT)</string>' >> $(CONTENTS)/Info.plist
 		@echo '    <key>CFBundlePackageType</key><string>APPL</string>' >> $(CONTENTS)/Info.plist
 		@echo '    <key>CFBundleSignature</key><string>????</string>' >> $(CONTENTS)/Info.plist
 		@echo '</dict></plist>' >> $(CONTENTS)/Info.plist
@@ -87,11 +93,17 @@ deploy: $(OUTPUT)
 			install_name_tool -change @rpath/$$lib @executable_path/../Frameworks/$$lib $(MACOS)/$(OUTPUT); \
 		done
 		@echo "Deployment build complete at $(BIN_DIR)/$(APP_NAME)"
+		touch $(BIN_DIR)/$(APP_NAME) # Forces Finder to reload the icon
+
+# 		Step 6 - Create a DMG
+# 		echo "Creating Disk Image..."
+# 		hdiutil create -volname "$(OUTPUT)" -srcfolder $(BIN_DIR)/$(APP_NAME) -ov -format UDZO $(BIN_DIR)/$(DMG_NAME)
+# 		@echo "✅ DMG created at $(BIN_DIR)/$(DMG_NAME)"
 
 
 # typing 'make clean' will remove all intermidiate build files
 clean:
-	rm -rf $(OBJ_FILES) $(DEP_FILES) ./bin/$(OUTPUT) ./bin/$(OUTPUT).app
+	rm -rf $(OBJ_FILES) $(DEP_FILES) ./bin/$(OUTPUT) ./bin/$(OUTPUT).app ./bin/$(DMG_NAME)
 
 # typing 'make run' will compile and run the program
 run: $(OUTPUT)
