@@ -352,6 +352,18 @@ void Scene_Play::sCollision()
                 p_State.state   = "air";
                 p_Input.up      = false;
                 p_Input.canJump = false;
+
+                if (e->getComponent<CAnimation>().animation.getName() == "Brick")
+                {
+                    std::shared_ptr<Entity> explosion = m_entityManager.addEntity("explosion");
+                    explosion->addComponent<CAnimation>(m_game->assets().getAnimation("Explosion"), false);
+                    explosion->addComponent<CTransform>(e_Transform.pos);
+                    explosion->addComponent<CLifespan>(15, m_currentFrame);
+                    explosion->getComponent<CTransform>().scale =
+                        Vec2(e_Transform.scale.x * 2, e_Transform.scale.y * 2);
+
+                    e->destroy();
+                }
             }
         }
 
@@ -387,7 +399,6 @@ void Scene_Play::sCollision()
                 {
                     if (t->getComponent<CAnimation>().animation.getName() == "Brick")
                     {
-                        std::cout << "Boooom \n";
                         std::shared_ptr<Entity> explosion = m_entityManager.addEntity("explosion");
                         explosion->addComponent<CAnimation>(m_game->assets().getAnimation("Explosion"), false);
                         explosion->addComponent<CTransform>(t_Transform.pos);
