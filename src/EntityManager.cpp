@@ -17,6 +17,11 @@ void EntityManager::update()
 
     // remove dead entities the vectore of all entities
     removeDeadEntities(m_entities);
+
+    for (auto &[tag, entityVec] : m_entityMap)
+    {
+        removeDeadEntities(entityVec);
+    }
 }
 
 std::shared_ptr<Entity> EntityManager::addEntity(const std::string &tag)

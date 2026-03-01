@@ -21,7 +21,7 @@ Texture TexPipeTop          assets/textures/PipeTop.png
 Animation Idle              TexIdle             1 0
 Animation Run               TexRun              3 10
 Animation Jump              TexJump             1 0
-Animation Bullet            TexBullet           4 10
+Animation Bullet            TexBullet           4 7
 
 Animation Ground            TexGround           1 0
 Animation SmallHill         TexSmallHill        1 0

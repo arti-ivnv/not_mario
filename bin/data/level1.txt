@@ -33,6 +33,7 @@ Dec Cloud3 14 8
 Tile Brick          6 3
 Tile MysteryBlock   7 3
 Tile Brick          8 3
+Tile Brick 6 1
 Tile MysteryBlock   9 3
 Tile Brick          10 3
 Tile MysteryBlock   11 3

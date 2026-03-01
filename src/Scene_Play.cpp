@@ -124,11 +124,6 @@ void Scene_Play::loadLevel(const std::string &filename)
     // NOTE: You final code should postion the entity with the grid x, y, postion read from the file:
     // brick->addComponent<CTransform>(gridToMidPixel(gridX, gridY, brick));
 
-    // if (brick->getComponent<CAnimation>().animation.getName() == "Ground")
-    // {
-    //     std::cout << "This could be a good way of identifying if a tile is a brick!\n";
-    // }
-
     // auto block = m_entityManager.addEntity("tile");
     // brick->addComponent<CAnimation>(m_game->assets().getAnimation("Block"), true);
     // brick->addComponent<CTransform>(Vec2(224, 480));
@@ -173,8 +168,12 @@ void Scene_Play::spawnBullet(std::shared_ptr<Entity> player)
     // TODO: this should spawn a bullet at the given entiy, going in the direction entity is facing
     std::shared_ptr<Entity> bullet = m_entityManager.addEntity("bullet");
     bullet->addComponent<CAnimation>(m_game->assets().getAnimation("Bullet"), true);
+    bullet->addComponent<CLifespan>(20, m_currentFrame);
+    bullet->addComponent<CBoungingBox>(Vec2(32, 32));
     bullet->addComponent<CTransform>(
         Vec2(player->getComponent<CTransform>().pos.x + 32, player->getComponent<CTransform>().pos.y));
+    bullet->getComponent<CTransform>().velocity.x = 10;
+    bullet->getComponent<CTransform>().scale      = Vec2(2.f, 2.f);
 }
 
 void Scene_Play::update()
@@ -184,7 +183,7 @@ void Scene_Play::update()
     // TODO: implement pause functionality
 
     sMovement();
-    // sLifespan();
+    sLifespan();
     sCollision();
     sAnimation();
     sRender();
@@ -242,8 +241,9 @@ void Scene_Play::sMovement()
 
     if (p_Input.shoot)
     {
-        spawnBullet(m_player);
         p_Input.canShoot = false;
+        p_Input.shoot    = false;
+        spawnBullet(m_player);
     }
 
     if (p_State.state != "jumping")
@@ -251,11 +251,37 @@ void Scene_Play::sMovement()
         p_Transform.prevPos.y = p_Transform.pos.y;
         p_Transform.pos.y += m_playerConfig.MAXSPEED * p_Gravity.gravity;
     }
+
+    for (auto &e : m_entityManager.getEntities())
+    {
+        if (e->tag() != "player")
+        {
+            if (e->hasComponent<CTransform>())
+            {
+                e->getComponent<CTransform>().prevPos = e->getComponent<CTransform>().pos;
+                e->getComponent<CTransform>().pos += e->getComponent<CTransform>().velocity;
+            }
+        }
+    }
 }
 
 void Scene_Play::sLifespan()
 {
     // TODO: Check lifespan of entities that have them, and destroy them if they go over
+    for (auto &e : m_entityManager.getEntities())
+    {
+        if (e->hasComponent<CLifespan>())
+        {
+            if (e->getComponent<CLifespan>().lifespan == 0)
+            {
+                e->destroy();
+            }
+            else
+            {
+                e->getComponent<CLifespan>().lifespan -= 1;
+            }
+        }
+    }
 }
 
 void Scene_Play::sCollision()
@@ -339,6 +365,49 @@ void Scene_Play::sCollision()
         // std::cout << "overlap.y: " << overlap.y << std::endl;
         // std::cout << "overlap.prev.y: " << prev_overlap.y << std::endl;
     }
+
+    for (auto &b : m_entityManager.getEntities("bullet"))
+    {
+        for (auto &t : m_entityManager.getEntities("tile"))
+        {
+            Vec2 overlap      = p.GetOverlap(t, b);
+            Vec2 prev_overlap = p.GetPreviousOverlap(t, b);
+
+            auto &t_Transform = t->getComponent<CTransform>();
+            auto &b_Transform = b->getComponent<CTransform>();
+
+            // LEFT-RIGHT COLLISIONS
+            if (overlap.x > 0 && prev_overlap.y > 0)
+            {
+                // RIGHT --> LEFT
+                if (t_Transform.pos.x < b_Transform.pos.x)
+                {
+                    if (t->getComponent<CAnimation>().animation.getName() == "Brick")
+                    {
+                        t->destroy();
+                        b->destroy();
+                    }
+                    else
+                    {
+                        b->destroy();
+                    }
+                }
+                // LEFT --> RIGHT
+                if (t_Transform.pos.x > b_Transform.pos.x)
+                {
+                    if (t->getComponent<CAnimation>().animation.getName() == "Brick")
+                    {
+                        t->destroy();
+                        b->destroy();
+                    }
+                    else
+                    {
+                        b->destroy();
+                    }
+                }
+            }
+        }
+    }
 }
 
 void Scene_Play::sDoAction(const Action &action)
@@ -378,7 +447,6 @@ void Scene_Play::sDoAction(const Action &action)
             if (m_player->getComponent<CInput>().canShoot)
             {
                 m_player->getComponent<CInput>().shoot = true;
-                std::cout << "ooops \n";
             }
         }
     }
@@ -402,8 +470,7 @@ void Scene_Play::sDoAction(const Action &action)
         }
         else if (action.name() == "SHOOT")
         {
-            std::cout << "ooops \n";
-            m_player->getComponent<CInput>().shoot = false;
+            m_player->getComponent<CInput>().canShoot = true;
         }
     }
 }
