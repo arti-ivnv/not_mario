@@ -1,10 +1,12 @@
-Font byteBounce      assets/fonts/ByteBounce.ttf
-Font cardot          assets/fonts/Cardot.ttf
+Font byteBounce             assets/fonts/ByteBounce.ttf
+Font cardot                 assets/fonts/Cardot.ttf
 
 Texture TexIdle             assets/animations/Mario_Small_Idle.png
 Texture TexRun              assets/animations/Mario_Small_Run.png
 Texture TexJump             assets/animations/Mario_Small_Jump.png
 Texture TexBullet           assets/animations/Bullet.png
+
+Texture TexExplosion        assets/animations/Explosion.png
 
 Texture TexGround           assets/textures/GroundBlock.png
 Texture TexSmallHill        assets/textures/Hill1.png
@@ -22,6 +24,8 @@ Animation Idle              TexIdle             1 0
 Animation Run               TexRun              3 10
 Animation Jump              TexJump             1 0
 Animation Bullet            TexBullet           4 7
+
+Animation Explosion         TexExplosion        7 3
 
 Animation Ground            TexGround           1 0
 Animation SmallHill         TexSmallHill        1 0
