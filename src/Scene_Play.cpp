@@ -364,6 +364,23 @@ void Scene_Play::sCollision()
 
                     e->destroy();
                 }
+
+                if (e->getComponent<CAnimation>().animation.getName() == "MysteryBlock")
+                {
+                    std::shared_ptr<Entity> explosion = m_entityManager.addEntity("coin");
+                    explosion->addComponent<CAnimation>(m_game->assets().getAnimation("Coin"), false);
+                    explosion->addComponent<CTransform>(Vec2(e_Transform.pos.x, e_Transform.pos.y - 64));
+                    explosion->addComponent<CLifespan>(15, m_currentFrame);
+                    explosion->getComponent<CTransform>().scale = Vec2(p_Transform.scale.x, p_Transform.scale.y);
+
+                    // e->getComponent<CAnimation>().animation.getSprite().setColor()
+                    e->destroy();
+                    std::shared_ptr<Entity> block = m_entityManager.addEntity("tile");
+                    block->addComponent<CAnimation>(m_game->assets().getAnimation("MysteryBlockInactive"), true);
+                    block->addComponent<CBoungingBox>(e->getComponent<CBoungingBox>().size);
+                    block->addComponent<CTransform>(Vec2(e_Transform.pos.x, e_Transform.pos.y));
+                    block->getComponent<CTransform>().scale = Vec2(p_Transform.scale.x, p_Transform.scale.y);
+                }
             }
         }
 
