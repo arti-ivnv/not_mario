@@ -171,9 +171,12 @@ void Scene_Play::spawnBullet(std::shared_ptr<Entity> player)
     bullet->addComponent<CLifespan>(20, m_currentFrame);
     bullet->addComponent<CBoungingBox>(Vec2(32, 32));
     bullet->addComponent<CTransform>(
-        Vec2(player->getComponent<CTransform>().pos.x + 32, player->getComponent<CTransform>().pos.y));
-    bullet->getComponent<CTransform>().velocity.x = 10;
-    bullet->getComponent<CTransform>().scale      = Vec2(2.f, 2.f);
+        (player->getComponent<CTransform>().scale.x > 0)
+            ? Vec2(player->getComponent<CTransform>().pos.x + 32, player->getComponent<CTransform>().pos.y)
+            : Vec2(player->getComponent<CTransform>().pos.x - 32, player->getComponent<CTransform>().pos.y));
+    bullet->getComponent<CTransform>().velocity.x = (player->getComponent<CTransform>().scale.x > 0) ? 10 : -10;
+    bullet->getComponent<CTransform>().scale =
+        (player->getComponent<CTransform>().scale.x > 0) ? Vec2(2.f, 2.f) : Vec2(-2.f, 2.f);
 }
 
 void Scene_Play::update()
