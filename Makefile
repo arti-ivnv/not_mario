@@ -25,7 +25,8 @@ CONFIG_FILES := .bin/data/assets.txt
 
 # Mac comiler / linker flags
 ifeq ($(OS), Darwin)
-	SFML_DIR := /opt/homebrew/Cellar/sfml@2/2.6.2_1
+# 	SFML_DIR := /opt/homebrew/Cellar/sfml@2/2.6.2_1
+	SFML_DIR := bin/graphics/2.6.2_1
 	CXX_FLAGS := -O3 -std=c++17 -Wno-unused-result -Wno-deprecated-declarations
 	INCLUDES := -I$(SRC_DIR) -I$(SFML_DIR)/include
 # 	Linker flags

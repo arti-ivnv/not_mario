@@ -364,9 +364,6 @@ void Scene_Play::sCollision()
                 p_Transform.pos.y -= overlap.y;
                 p_Input.canJump = true;
                 p_State.state   = (p_Input.left || p_Input.right) ? "run" : "idle";
-                std::cout << e->getComponent<CAnimation>().animation.getName() << "\n ";
-                std::cout << m_player->getComponent<CAnimation>().animation.getName() << "\n ";
-                std::cout << p_State.state << " \n";
             }
             // BOTTOM --> TOP
             if (p_Transform.pos.y > e_Transform.pos.y)
@@ -411,7 +408,6 @@ void Scene_Play::sCollision()
         {
             if (p_Transform.pos.y < e_Transform.pos.y)
             {
-                std::cout << p_Transform.pos.y << " | " << e_Transform.pos.y << '\n';
                 p_State.state   = "air";
                 p_Input.canJump = false;
             }
