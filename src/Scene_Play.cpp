@@ -315,6 +315,12 @@ void Scene_Play::sCollision()
         // m_player->getComponent<CTransform>().pos.x += m_player->getComponent<CBoungingBox>().halfSize.x;
         p_Transform.pos.x += p_Transform.velocity.x;
     }
+    if (p_Transform.pos.y >= m_game->window().getSize().y)
+    {
+        // m_player->getComponent<CTransform>().pos.x += m_player->getComponent<CBoungingBox>().halfSize.x;
+        m_player->destroy();
+        spawnPlayer();
+    }
 
     Physics p;
     for (auto &e : m_entityManager.getEntities("tile"))
