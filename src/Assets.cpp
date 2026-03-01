@@ -1,4 +1,5 @@
 #include "Assets.hpp"
+#include "Resource_Path.hpp"
 #include <iostream>
 
 void Assets::loadFromFile(const std::string &fileName)
@@ -17,7 +18,7 @@ void Assets::loadFromFile(const std::string &fileName)
 
             fin >> name >> path;
 
-            addFont(name, path);
+            addFont(name, getResourcePath() + path);
         }
         else if (fpoint == "Texture")
         {
@@ -26,7 +27,7 @@ void Assets::loadFromFile(const std::string &fileName)
 
             fin >> name >> path;
 
-            addTexture(name, path);
+            addTexture(name, getResourcePath() + path);
         }
         else if (fpoint == "Animation")
         {

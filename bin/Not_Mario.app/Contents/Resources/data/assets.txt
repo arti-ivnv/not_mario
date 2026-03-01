@@ -1,0 +1,51 @@
+Font byteBounce                     assets/fonts/ByteBounce.ttf
+Font cardot                         assets/fonts/Cardot.ttf
+
+Texture TexIdle                     assets/animations/Mario_Small_Idle.png
+Texture TexRun                      assets/animations/Mario_Small_Run.png
+Texture TexJump                     assets/animations/Mario_Small_Jump.png
+Texture TexBullet                   assets/animations/Bullet.png
+
+Texture TexExplosion                assets/animations/Explosion.png
+Texture TexCoin                     assets/animations/Coin.png
+
+Texture TexGround                   assets/textures/GroundBlock.png
+Texture TexSmallHill                assets/textures/Hill1.png
+Texture TexBrick                    assets/textures/Brick.png
+Texture TexCloud1                   assets/textures/Cloud1.png
+Texture TexCloud2                   assets/textures/Cloud2.png
+Texture TexCloud3                   assets/textures/Cloud3.png
+Texture TexEmptyBlock               assets/textures/EmptyBlock.png
+Texture TexHardBlock                assets/textures/HardBlock.png
+Texture TexMysteryBlock             assets/textures/MysteryBlock.png
+Texture TexMysteryBlockInactive     assets/textures/MysteryBlockInactive.png
+Texture TexPipeBottom               assets/textures/PipeBottom.png
+Texture TexPipeTop                  assets/textures/PipeTop.png
+Texture TexCastle                   assets/textures/Castle.png
+Texture TexFlag                     assets/textures/Flag.png
+Texture TexFlagPole                 assets/textures/FlagPole.png
+
+
+Animation Idle                      TexIdle                     1 0
+Animation Run                       TexRun                      3 10
+Animation Jump                      TexJump                     1 0
+Animation Bullet                    TexBullet                   4 7
+
+Animation Explosion                 TexExplosion                7 3
+Animation Coin                      TexCoin                     7 3
+
+Animation Ground                    TexGround                   1 0
+Animation SmallHill                 TexSmallHill                1 0
+Animation Brick                     TexBrick                    1 0
+Animation Cloud1                    TexCloud1                   1 0
+Animation Cloud2                    TexCloud2                   1 0
+Animation Cloud3                    TexCloud3                   1 0
+Animation EmptyBlock                TexEmptyBlock               1 0
+Animation HardBlock                 TexHardBlock                1 0
+Animation MysteryBlock              TexMysteryBlock             1 1
+Animation MysteryBlockInactive      TexMysteryBlockInactive     1 0
+Animation PipeBottom                TexPipeBottom               1 0
+Animation PipeTop                   TexPipeTop                  1 0
+Animation Castle                    TexCastle                   1 0
+Animation Flag                      TexFlag                     1 0
+Animation FlagPole                  TexFlagPole                 1 0

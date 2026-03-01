@@ -2,10 +2,12 @@
 #include <iostream>
 
 #include "GameEngine.hpp"
+#include "Resource_Path.hpp"
 
 int main(void)
 {
-    GameEngine g("data/assets.txt");
+
+    GameEngine g(getResourcePath() + "data/assets.txt");
     g.run();
     return 0;
 }

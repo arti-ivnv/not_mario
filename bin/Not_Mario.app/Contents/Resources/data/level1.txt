@@ -1,0 +1,76 @@
+Tile Ground 0 0
+Tile Ground 1 0
+Tile Ground 2 0
+Tile Ground 3 0
+Tile Ground 4 0
+Tile Ground 5 0
+Tile Ground 6 0
+Tile Ground 7 0
+Tile Ground 8 0
+Tile Ground 9 0
+Tile Ground 10 0
+Tile Ground 11 0
+Tile Ground 12 0
+Tile Ground 13 0
+Tile Ground 14 0
+Tile Ground 15 0
+Tile Ground 16 0
+Tile Ground 17 0
+Tile Ground 18 0
+Tile Ground 19 0
+Tile Ground 20 0
+Tile Ground 21 0
+Tile Ground 22 0
+Tile Ground 23 0
+Tile Ground 24 0
+Tile Ground 25 0
+Tile Ground 26 0
+Tile Ground 27 0
+Tile Ground 28 0
+Tile Ground 29 0
+Tile Ground 30 0
+Tile Ground 31 0
+Tile Ground 32 0
+Tile Ground 33 0
+Tile Ground 34 0
+Tile Ground 35 0
+Tile Ground 36 0
+Tile Ground 37 0
+Tile Ground 38 0
+Tile Ground 39 0
+Tile Ground 40 0
+Tile Ground 41 0
+Tile Ground 42 0
+
+Tile PipeBottom 17 1
+Tile PipeBottom 17 2
+Tile PipeTop 17 3
+
+Tile PipeBottom 22 1
+Tile PipeBottom 22 2
+Tile PipeTop 22 3
+
+Tile FlagPole 32 1
+Tile Flag 31 9
+
+// Decorations
+Dec SmallHill 1 1
+Dec Cloud1 4 10
+Dec Cloud3 14 8
+Dec Castle 34 1
+
+// Pyramid 
+Tile Brick          6 3
+Tile MysteryBlock   7 3
+Tile Brick          8 3
+Tile MysteryBlock   9 3
+Tile Brick          10 3
+Tile MysteryBlock   11 3
+Tile Brick          12 3
+Tile MysteryBlock   8 6
+Tile Brick          9 6
+Tile MysteryBlock   10 6
+Tile MysteryBlock   9 9
+
+Player 3 6 64 52 5 -20 20 0.75 Buster
+//Player 3 6 64 64 5 -20 20 0.75 Buster

@@ -1,5 +1,6 @@
 #include "Scene_Menu.hpp"
 
+#include "Resource_Path.hpp"
 #include "Scene_Play.hpp"
 #include <iostream>
 
@@ -17,9 +18,9 @@ void Scene_Menu::init()
     m_menuStrings.push_back("LEVEL 2");
     m_menuStrings.push_back("LEVEL 3");
 
-    m_levelPaths.push_back("data/level1.txt");
-    m_levelPaths.push_back("data/level2.txt");
-    m_levelPaths.push_back("data/level3.txt");
+    m_levelPaths.push_back(getResourcePath() + "data/level1.txt");
+    m_levelPaths.push_back(getResourcePath() + "data/level2.txt");
+    m_levelPaths.push_back(getResourcePath() + "data/level3.txt");
 
     m_menuStrings.push_back("UP : W");
     m_menuStrings.push_back("DOWN : S");
