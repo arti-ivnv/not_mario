@@ -16,8 +16,10 @@ SRC_DIR := ./src
 OBJ_DIR := ./obj
 INC_DIR := ./include
 BIN_DIR := ./bin
-ICON_NAME := ./bin/NotMario.icns
+ICON_FILE := ./bin/icon.icns
+ICON_NAME := icon.icns
 DMG_NAME := Not_Mario_v1.dmg
+TARGET_OS_VER := 10.14
 
 # Mac-specific deployment Paths
 APP_BUNDLE := $(OUTPUT).app
@@ -32,10 +34,10 @@ CONFIG_FILES := .bin/data/assets.txt
 ifeq ($(OS), Darwin)
 # 	SFML_DIR := /opt/homebrew/Cellar/sfml@2/2.6.2_1
 	SFML_DIR := bin/graphics/2.6.2_1
-	CXX_FLAGS := -O3 -std=c++17 -Wno-unused-result -Wno-deprecated-declarations
+	CXX_FLAGS := -O3 -std=c++17 -mmacosx-version-min=$(TARGET_OS_VER) -Wno-unused-result -Wno-deprecated-declarations 
 	INCLUDES := -I$(SRC_DIR) -I$(SFML_DIR)/include
 # 	Linker flags
-	LDFLAGS := -O3 -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -L$(SFML_DIR)/lib -framework OpenGL -framework CoreFoundation
+	LDFLAGS := -O3 -mmacosx-version-min=$(TARGET_OS_VER) -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -L$(SFML_DIR)/lib -framework OpenGL -framework CoreFoundation
 endif
 
 
@@ -75,7 +77,7 @@ deploy: $(OUTPUT)
 			if [ -d "bin/assets" ]; then cp -r bin/assets $(RESOURCES)/; fi
 
 # 		Step 3.5 - Copy Icon
-		if [ -f "$(ICON_NAME)" ]; then cp $(ICON_NAME) $(RESOURCES)/; fi
+		if [ -f "$(ICON_FILE)" ]; then cp $(ICON_FILE) $(RESOURCES)/; fi
 
 # 		Step 4 - Generate Info.plist
 		@echo '<?xml version="1.0" encoding="UTF-8"?>' > $(CONTENTS)/Info.plist
@@ -85,6 +87,7 @@ deploy: $(OUTPUT)
 		@echo '    <key>CFBundleIconFile</key><string>$(ICON_NAME)</string>' >> $(CONTENTS)/Info.plist
 		@echo '    <key>CFBundleIdentifier</key><string>tech.arti-games.$(OUTPUT)</string>' >> $(CONTENTS)/Info.plist
 		@echo '    <key>CFBundlePackageType</key><string>APPL</string>' >> $(CONTENTS)/Info.plist
+		@echo '    <key>LSMinimumSystemVersion</key><string>$(TARGET_OS_VER)</string>' >> $(CONTENTS)/Info.plist
 		@echo '    <key>CFBundleSignature</key><string>????</string>' >> $(CONTENTS)/Info.plist
 		@echo '</dict></plist>' >> $(CONTENTS)/Info.plist
 
